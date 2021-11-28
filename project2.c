@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-
 struct memory {
 
   int memEnd; // where this peice of memory ends
@@ -13,33 +12,85 @@ struct memory {
 
 }memSlot;
 
-void findOpenSlotFIRST(struct memory *memoryBar, int currentSize, int currentPID, int totalSize) {
+char* releaseMemory(struct memory *memoryBar, int currentPID, int totalSizeMemBar) {
 
-  // start at the beginning of the memory bar, then recursively iterate through it, until we find an open slot, then check if it big enough
+  // release the memory held by the current process
   int i = 0;
-  while (i < totalSize) {
-    int counter = i;
+  while (i < totalSizeMemBar) {
+    if (memoryBar[i].pID == currentPID) {
+      memoryBar[i].pID = 0;
+      memoryBar[memoryBar[i].memEnd].pID = 0;
+      return "FREE P%d %d %d", currentPID, memoryBar[i].size, i;
+    }
+    else {
+      i = memoryBar[i].memEnd+1;
+    }
+  }
+  // we were not able to free the pID because it does not exist in the memory bar
+  return "FAIL RELEASE P%d", currentPID;
+}
+
+void listAvaliable(struct memory *memoryBar, int totalSizeMemBar) {
+  // print locations of all avaliable memory in space separated pairs (n1, x1) (n2, x2) ...
+  int i = 0;
+  int flag = 0;
+  while (i < totalSizeMemBar) {
+    int counter = 0; // this is used to keep track of how much memory is open in that slot
+    if (memoryBar[i].pID != 0) { //if the location contains memory then increment to the end of the memory
+      i = memoryBar[i].memEnd+1;
+    }
+    else {
+      while (memoryBar[i].pID == 0) {
+        counter++;
+      }
+      printf("(%d,%d) ", counter, i);
+      flag = 1;
+    }
+  }
+  if (flag == 0) { //if no slots were open we output that the memory is full
+    printf("FULL");
+  }
+}
+
+void listAssigned(struct memory *memoryBar, int totalSizeMemBar) {
+  // print a list of all the process labels in space separated triples (a1, n1, x1) (a2, n2, x2) ...
+  
+}
+
+char* findOpenSlotFIRST(struct memory *memoryBar, int currentSize, int currentPID, int totalSizeMemBar) {
+
+  // start at the beginning of the memory bar, then recursively iterate through it, until we find an open slot, then check if its big enough
+  int i = 0;
+  while (i < totalSizeMemBar) { //using a sliding window approach with 'i' and 'counter' being my pointers
+    int counter = 0;
 
     if (memoryBar[i].pID == 0) { // if the pIDs size == 0 that means we have any empty slot, even if we are at the last slot this will not return 0 because the last slot if full will still have an identifing pID
 
       // need to check if the slot is big enough to insert our new pID
-      while (memoryBar[i].pID == 0 || counter < currentSize) { //scans through until we find a slot that is occupied or a big enough slot
+      while (memoryBar[counter].pID == 0 || counter < currentSize) { //scans through until we find a slot that is occupied or a big enough slot for the new process
         ++counter;
       }
-      if (counter <= currentSize && memoryBar[i].size == 0) { //TODO: take a look at this to make sure it works
-        memoryBar[i].memEnd = i+currentSize;
+      if (counter == currentSize-1 && memoryBar[counter].pID == 0) { // the slot is at least big enough and is empty
+        memoryBar[i].memEnd = i+currentSize-1;
         memoryBar[i].size = currentSize;
         memoryBar[i].pID = currentPID;
-        memoryBar[i+currentSize].isLastSlot = 1;
-        memoryBar[i+currentSize].pID = currentPID;
+        memoryBar[i+currentSize-1].isLastSlot = 1;
+        memoryBar[i+currentSize-1].pID = currentPID;
+        return "ALLOCATED P%d %d", currentPID, i;
       } 
 
+      else if (currentSize >= counter) { // if open slot was too small
+        i = counter+i; // we can continue where we left off
+      }
     }
       
-    else { // if we haven't found an empty slot, then we increment to the end of the current pID
+    else { // if we haven't found an empty slot, then we increment to the slot aftwr the end of the current pID so we can start at an empty one
         i = memoryBar[i].memEnd+1;
     }
   }
+
+  // we ran through entire list and did not insert the process
+  return "FAIL REQUEST %d %d", currentPID, currentSize;
 };
 
 void firstFit(struct memory *memorybar, FILE *file, int totalMemSize) {
@@ -48,21 +99,28 @@ void firstFit(struct memory *memorybar, FILE *file, int totalMemSize) {
 
   char *task = NULL; // used for request, release, find, and list 
   char *task2 = NULL; // used for list or for holding the pIDs name
+  int pIDNumber = 0;
   int currentSize; // used for the size of the pID
 
-  while (fscanf(file, "%ms", task) == 1) {
+  while (fscanf(file, "%ms", task) == 1) { // we read in everything from the txt file and execute the instructions as we read it in
     if (task == "REQUEST") {
       fscanf(file, "%ms", task2);
-      fscanf(file, "%d", currentSize);
+      fscanf(file, "%d", currentSize); 
+      pIDNumber = task2[1];
+      char *returned = findOpenSlotFIRST(memorybar, currentSize, pIDNumber, totalMemSize);
+      printf("%s", returned);
     }
     else if (task == "RELEASE") {
       fscanf(file, "%ms", task2);
+      pIDNumber = task2[1];
     }
     else if (task == "LIST") {
       fscanf(file, "%ms", task2);
+      pIDNumber = task2[1];
     }
-    else {
+    else { // task == "FIND"
       fscanf(file, "%ms", task2);
+      pIDNumber = task2[1];
     }
   }
 
@@ -82,13 +140,7 @@ void worstFit(struct memory *memorybar, FILE *file, int totalMemSize) {
 };
 
 
-int program(FILE *file) {
-
-  char *typeFit = NULL;
-  int totalMemSize = 0; // this will be from 2^k, 4<=k<=30
-
-  fscanf(stdin, "%ms", typeFit);
-  fscanf(stdin, "%d", totalMemSize);
+int program(FILE *file, char *typeFit, int totalMemSize) {
 
   struct memory *memBar = malloc(sizeof(memSlot)*totalMemSize+1);
   memset(memBar, 0, sizeof(memBar)); // initialize everything to 0
@@ -109,15 +161,17 @@ int program(FILE *file) {
     worstFit(memBar, file, totalMemSize);
   }
 
-  
+  free(memBar); //need to free the memory from malloc
   return 0;
 }
 
 int main(int argc, char** argv) {
 
 	int result;
-  FILE *file = fopen(argv[4], "r"); // will get the file name after the previous 3 arguments
-	result = program(file);
+  char *typeFit = argv[1];
+  int totalMemSize = argv[2]; // this will be from 2^k, 4<=k<=30
+  FILE *file = fopen(argv[3], "r"); // will get the file name after the previous 3 arguments
+	result = program(file, typeFit, totalMemSize);
 	return result;
 
 }
