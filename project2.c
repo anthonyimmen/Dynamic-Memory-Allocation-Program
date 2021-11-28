@@ -47,14 +47,28 @@ void listAvaliable(struct memory *memoryBar, int totalSizeMemBar) {
       flag = 1;
     }
   }
-  if (flag == 0) { //if no slots were open we output that the memory is full
+  if (flag == 0) { //if no slots were open we output that the memory is FULL
     printf("FULL");
   }
 }
 
 void listAssigned(struct memory *memoryBar, int totalSizeMemBar) {
   // print a list of all the process labels in space separated triples (a1, n1, x1) (a2, n2, x2) ...
-  
+  int i = 0;
+  int flag = 0;
+  while (i < totalSizeMemBar) {
+    if (memoryBar[i].pID == 1) {
+      printf("(%d,%d,%d) "), memoryBar[i].pID, memoryBar[i].size, i;
+      i = memoryBar[i].memEnd+1;
+      flag = 1;
+    }
+    else {
+      i++;
+    }
+  }
+  if (flag == 0) { // if memory bar is completely empty we output NONE
+    printf("NONE");
+  }
 }
 
 char* findOpenSlotFIRST(struct memory *memoryBar, int currentSize, int currentPID, int totalSizeMemBar) {
