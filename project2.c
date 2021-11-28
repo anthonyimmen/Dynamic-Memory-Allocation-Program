@@ -152,14 +152,23 @@ void firstFit(struct memory *memorybar, FILE *file, int totalMemSize) {
     else if (task == "RELEASE") {
       fscanf(file, "%ms", task2);
       pIDNumber = task2[1];
+      char *returned = releaseMemory(memorybar, pIDNumber, totalMemSize);
+      printf("%s", returned);
     }
     else if (task == "LIST") {
       fscanf(file, "%ms", task2);
       pIDNumber = task2[1];
+      if (task2 == "ASSIGNED") {
+        listAssigned(memorybar, totalMemSize);
+      }
+      else {
+        listAvaliable(memorybar, totalMemSize);
+      }
     }
     else { // task == "FIND"
       fscanf(file, "%ms", task2);
       pIDNumber = task2[1];
+      find(memorybar, totalMemSize, pIDNumber);
     }
   }
 
