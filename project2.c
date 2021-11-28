@@ -217,9 +217,9 @@ int main(int argc, char** argv) {
 
 	int result;
   char *typeFit = argv[1];
-  int totalMemSize = argv[2]; // this will be from 2^k, 4<=k<=30
+  int totalMemSize = strtol(argv[2], NULL, 10); // this will be from 2^k, 4<=k<=30
   FILE *file = fopen(argv[3], "r"); // will get the file name after the previous 3 arguments
-	result = program(file, typeFit, totalMemSize);
-	return result;
+  result = program(file, typeFit, totalMemSize);
+  return result;
 
 }
