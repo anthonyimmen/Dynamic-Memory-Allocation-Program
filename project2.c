@@ -31,6 +31,7 @@ char* releaseMemory(struct memory *memoryBar, int currentPID, int totalSizeMemBa
 }
 
 void listAvaliable(struct memory *memoryBar, int totalSizeMemBar) {
+
   // print locations of all avaliable memory in space separated pairs (n1, x1) (n2, x2) ...
   int i = 0;
   int flag = 0;
@@ -53,6 +54,7 @@ void listAvaliable(struct memory *memoryBar, int totalSizeMemBar) {
 }
 
 void listAssigned(struct memory *memoryBar, int totalSizeMemBar) {
+
   // print a list of all the process labels in space separated triples (a1, n1, x1) (a2, n2, x2) ...
   int i = 0;
   int flag = 0;
@@ -68,6 +70,30 @@ void listAssigned(struct memory *memoryBar, int totalSizeMemBar) {
   }
   if (flag == 0) { // if memory bar is completely empty we output NONE
     printf("NONE");
+  }
+}
+
+void find(struct memory *memoryBar, int totalSizeMemBar, int currentPID) {
+
+  // need to find the location of the current PID, return the name, size, and location, if unsuccessful print fault
+  int i = 0;
+  int flag = 0;
+  while (i < totalSizeMemBar) {
+    if (memoryBar[i].pID == currentPID) { // we found the matching pID
+       printf("(%d,%d,%d) "), memoryBar[i].pID, memoryBar[i].size, i;
+       i = memoryBar[i].memEnd+1;
+       flag = 1;
+       break;
+    }
+    else if (memoryBar[i].pID != 0) { // we found a pID but it does not match
+       i = memoryBar[i].memEnd+1;
+    }
+    else { // empty space, so we must increment linearly through
+      i++;
+    }
+  }
+  if (flag == 0) { // the specified pID was never found
+    printf("FAULT");
   }
 }
 
@@ -110,7 +136,6 @@ char* findOpenSlotFIRST(struct memory *memoryBar, int currentSize, int currentPI
 void firstFit(struct memory *memorybar, FILE *file, int totalMemSize) {
   
   // need to read in line by line on the file
-
   char *task = NULL; // used for request, release, find, and list 
   char *task2 = NULL; // used for list or for holding the pIDs name
   int pIDNumber = 0;
