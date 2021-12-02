@@ -1,7 +1,7 @@
-all: project2
+all: fall_project2
 
 project0: project2.c
-	cc project2.c -o project2
+	cc fall_project2.c -o fall_project2
 
 clean:
-	rm -f project2
+	rm -f fall_project2

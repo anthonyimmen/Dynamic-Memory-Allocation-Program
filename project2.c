@@ -9,12 +9,11 @@
 // fix memset
 // maybe fix input?
 
-typedef struct memory {
+struct memory {
 
   char memEnd[16]; // where this peice of memory ends
   char size[16]; // the size of the memory, which is not necessarily the same as the where the memory ends
   char pID[16]; // the id of the process so we can find it later
-  char isLastSlot; //checks if the slot is an ending peice of memory, 0 if false, 1 is true
 
 }memSlot;
 
@@ -26,12 +25,12 @@ void releaseMemory(struct memory *memoryBar, char currentPID[], int totalSizeMem
   while (i < totalSizeMemBar) {
     if (strcmp(memoryBar[i].pID, currentPID) == 0) {
       strcpy(memoryBar[i].pID,"0");
-      strcpy(memoryBar[memoryBar[i].memEnd].pID, "0");
-      printf("FREE %s %d %d", currentPID, memoryBar[i].size, i);
+      strcpy(memoryBar[atoi(memoryBar[i].memEnd)].pID, "0");
+      printf("FREE %s %s %d", currentPID, memoryBar[i].size, i);
       return;
     }
     else {
-      i = memoryBar[i].memEnd+1;
+      i = atoi(memoryBar[i].memEnd)+1;
     }
   }
   // we were not able to free the pID because it does not exist in the memory bar
@@ -46,7 +45,7 @@ void listAvaliable(struct memory *memoryBar, int totalSizeMemBar) {
   while (i < totalSizeMemBar) {
     int counter = 0; // this is used to keep track of how much memory is open in that slot
     if (strcmp(memoryBar[i].pID, "0") != 0) { //if the location contains memory then increment to the end of the memory
-      i = memoryBar[i].memEnd+1;
+      i = atoi(memoryBar[i].memEnd)+1;
     }
     else {
       while (strcmp(memoryBar[i].pID, "0") == 0) {
@@ -68,8 +67,8 @@ void listAssigned(struct memory *memoryBar, int totalSizeMemBar) {
   int flag = 0;
   while (i < totalSizeMemBar) {
     if (strcmp(memoryBar[i].pID, "0") != 0) {
-      printf("(%s,%d,%d) "), memoryBar[i].pID, memoryBar[i].size, i;
-      i = memoryBar[i].memEnd+1;
+      printf("(%s,%s,%d) "), memoryBar[i].pID, memoryBar[i].size, i;
+      i = atoi(memoryBar[i].memEnd)+1;
       flag = 1;
     }
     else {
@@ -88,21 +87,18 @@ void find(struct memory *memoryBar, int totalSizeMemBar, char currentPID[]) {
   int flag = 0;
   while (i < totalSizeMemBar) {
     if (strcmp(memoryBar[i].pID, currentPID) == 0) { // we found the matching pID
-       printf("(%s,%d,%d) "), memoryBar[i].pID, memoryBar[i].size, i;
-       i = memoryBar[i].memEnd+1;
-       flag = 1;
-       break;
+       printf("(%s,%s,%d) "), memoryBar[i].pID, memoryBar[i].size, i;
+       return;
     }
-    else if (strcmp(memoryBar[i].pID, "0") != 0) { // we found a pID but it does not match
-       i = memoryBar[i].memEnd+1;
+    else if (memoryBar[i].pID != '0') { // we found a pID but it does not match
+       i = atoi(memoryBar[i].memEnd)+1;
     }
     else { // empty space, so we must increment linearly through
       i++;
     }
   }
-  if (flag == 0) { // the specified pID was never found
-    printf("FAULT");
-  }
+    printf("FAULT"); // the specified pID was never found
+  
 }
 
 void findOpenSlotFIRST(struct memory *memoryBar, int currentSize, char currentPID[], int totalSizeMemBar) {
@@ -113,18 +109,16 @@ void findOpenSlotFIRST(struct memory *memoryBar, int currentSize, char currentPI
     int counter = 0;
     
 
-    if (strcmp(memoryBar[i].pID, "0") == 0) { // if the pIDs size == 0 that means we have any empty slot, even if we are at the last slot this will not return 0 because the last slot if full will still have an identifing pID
+    if (memoryBar[i].pID == '0') { // if the pIDs size == 0 that means we have any empty slot, even if we are at the last slot this will not return 0 because the last slot if full will still have an identifing pID
 
       // need to check if the slot is big enough to insert our new pID
-      while (strcmp(memoryBar[counter].pID, "0") == 0 || counter < currentSize) { //scans through until we find a slot that is occupied or a big enough slot for the new process
+      while (memoryBar[counter].pID == '0' || counter < currentSize) { //scans through until we find a slot that is occupied or a big enough slot for the new process
         ++counter;
       }
-      if (counter == currentSize-1 && strcmp(memoryBar[counter].pID, "0") == 0) { // the slot is at least big enough and is empty
-        strcpy(memoryBar[i].memEnd, itoa(i+currentSize-1));
-       // sprintf(memoryBar[i].memEnd, "%d", i+currentSize-1);
-        memoryBar[i].size = currentSize;
+      if (counter == currentSize-1 && memoryBar[counter].pID[0] == '0') { // the slot is at least big enough and is empty
+        sprintf(memoryBar[i].memEnd, "%d", i+currentSize-1);
+        sprintf(memoryBar[i].size, "%d", currentSize);
         strcpy(memoryBar[i].pID, currentPID);
-        memoryBar[i+currentSize-1].isLastSlot = 1;
         strcpy(memoryBar[i+currentSize-1].pID, currentPID);
         printf("ALLOCATED %s %d", currentPID, i);
         return;
@@ -136,7 +130,7 @@ void findOpenSlotFIRST(struct memory *memoryBar, int currentSize, char currentPI
     }
       
     else { // if we haven't found an empty slot, then we increment to the slot aftwr the end of the current pID so we can start at an empty one
-        i = memoryBar[i].memEnd+1;
+        i = atoi(memoryBar[i].memEnd)+1;
     }
   }
   // we ran through entire list and did not insert the process
@@ -148,14 +142,12 @@ void firstFit(struct memory *memorybar, FILE *file, int totalMemSize) {
   // need to read in line by line on the file
   char *task = malloc(sizeof(task)*16); // used for request, release, find, and list 
   char *task2 = malloc(sizeof(task2)*16); // used for list or for holding the pIDs name 
-  int currentSize[16]; // used for the size of the pID
+  int currentSize = 0; // used for the size of the pID
 
   while (fscanf(file, "%s", task) == 1) { // we read in everything from the txt file and execute the instructions as we read it in
-  printf("made inside of while loop");
     if (strcmp(task, "REQUEST") == 0) {
       fscanf(file, "%s", task2);
       fscanf(file, "%d", &currentSize); 
-      printf("before find open slot 1st");
       findOpenSlotFIRST(memorybar, currentSize, task2, totalMemSize);
     }
 
@@ -206,7 +198,7 @@ int program(FILE *file, char *typeFit, char *totalMemSize) {
  
   if (strcmp(typeFit, "FIRSTFIT") == 0) {
     printf("at first fit ");
-    firstFit(memBar, file, totalMemSizeINT);
+    //firstFit(memBar, file, totalMemSizeINT);
   }
 
   else if (strcmp(typeFit, "NEXTFIT") == 0) {
@@ -234,7 +226,6 @@ int main(int argc, char** argv) {
   FILE *file = fopen(argv[3], "r"); // will get the file name after the previous 3 arguments
   printf("%s%d ", typeFit, totalMemSize);
   result = program(file, typeFit, totalMemSize);
-  //return result;
-  return 0;
+  return result;
 
 }
