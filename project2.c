@@ -112,7 +112,7 @@ void listAssigned(struct memory *memory) {
   }
 
   while (i < memory[0].listLength) {
-    printf("(%s,%lu,%lu) ", memory[i].pID,memory[i].size,memory[i].head);
+    printf("(%s, %lu, %lu) ", memory[i].pID,memory[i].size,memory[i].head);
     i++;
   }
   printf("\n");
@@ -125,11 +125,11 @@ void listAvaliable(struct memory *memory) {
   int flag = 0; // is set to 1 if we have open space
   while (i < memory[0].listLength) {
     if (memory[i+1].visited != -1) {
-      printf("(%lu,%lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
+      printf("(%lu, %lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
     else if (memory[i+1].head - memory[i].tail != 1) { // this will not be equal to 1 if the gap between is greater than 1
-      printf("(%lu,%lu) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
+      printf("(%lu, %lu) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
     i++;
