@@ -106,7 +106,7 @@ void release(struct memory *memory, struct memory process) {
 void listAssigned(struct memory *memory) {
 
   int i = 0;
-  if (memory[0].listLength <= 0) {
+  if (memory[0].listLength <= 0) { //get working for == 0
     printf("NONE\n");
     return;
   }
@@ -164,7 +164,7 @@ void shiftLeft(struct memory *memory, int lastIdx) { //used in release
   int i = memory[0].listLength;
   struct memory temp = memory[i];
   struct memory temp2;
-  while (i > lastIdx) {
+  while (i > lastIdx && lastIdx != 0) {
     temp2 = memory[i-1];
     memory[i-1] = temp;
     temp = temp2;
@@ -233,7 +233,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
         strcpy(process.pID, task2);
         find(allMemory, process);
       }
-
+    
     }
  
   }
@@ -248,7 +248,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
   else {
     //worstFIT(allMemory, file);
   }
-
+  
 };
 
 
