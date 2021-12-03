@@ -5,12 +5,14 @@
 
 struct memory {
 
-  long unsigned size;  // the size of the process
-  char pID[16];        // the id of the process 
+  long unsigned size;       // the size of the process
+  char pID[16];             // the id of the process 
   long unsigned head;
   long unsigned tail;
-  int listLength;        // this acts as a length for memory, it is stored in slot memory[0]
-  long unsigned totalSize;
+  int listLength;           // this acts as a length for memory, it is stored in slot memory[0]
+  long unsigned totalSize;  // this is the total size in bytes of the memory array
+  int visited;
+  long unsigned fullLength;
 
 }allMemory;
 
@@ -20,6 +22,9 @@ void fillNEXT(struct memory *memory, struct memory process);
 void fillBEST(struct memory *memory, struct memory process);
 void fillWORST(struct memory *memory, struct memory process);
 void release(struct memory *memory, struct memory process);
+void listAssigned(struct memory *memory);
+void listAvaliable(struct memory *memory);
+void find(struct memory *memory, struct memory process);
 void shiftLeft(struct memory *memory, int lastIdx);
 void shiftRight(struct memory *memory, int startIdx);
 void program(FILE *file, char *typeFit, long unsigned totalSize);
@@ -34,9 +39,11 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
     allMemory[i].head = 0;
     allMemory[i].tail = process.size-1;
     allMemory[0].listLength++;
+    allMemory[i].size = process.size;
     allMemory[0].totalSize -= process.size;
     strcpy(allMemory[i].pID, process.pID);
     printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
+    allMemory[i].visited = -1;
     return;
   }
 
@@ -48,9 +55,11 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
         i++; //increment i so we insert into the new open slot
         allMemory[i].head = allMemory[i-1].tail+1;
         allMemory[i].tail = allMemory[i].head+process.size-1;
+        allMemory[i].size = process.size;
         allMemory[0].totalSize -= process.size;
         strcpy(allMemory[i].pID, process.pID);
         printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
+        allMemory[i].visited = -1;
         return;
       }
 
@@ -82,10 +91,11 @@ void release(struct memory *memory, struct memory process) {
   int i = 0;
   while (i < memory[0].listLength) {
     if (strcmp(memory[i].pID, process.pID) == 0) {
-        long unsigned head = memory[i].head;
-        memory[0].totalSize += process.size;
+        long unsigned headCPY = memory[i].head;
+        long unsigned sizeCPY = memory[i].size;
+        memory[0].totalSize += memory[i].size;
         shiftLeft(memory, i);
-        printf("FREE %s %lu %lu\n", process.pID, process.size, head);
+        printf("FREE %s %lu %lu\n", process.pID, sizeCPY, headCPY);
         return;
     }
     i++;
@@ -93,7 +103,59 @@ void release(struct memory *memory, struct memory process) {
   printf("FAIL RELEASE %s\n", process.pID);
 }
 
-void listAssigned(struct memory *memory, struct memory process) {
+void listAssigned(struct memory *memory) {
+
+  int i = 0;
+  if (memory[0].listLength <= 0) {
+    printf("NONE\n");
+    return;
+  }
+
+  while (i < memory[0].listLength) {
+    printf("(%s,%lu,%lu) ", memory[i].pID,memory[i].size,memory[i].head);
+    i++;
+  }
+  printf("\n");
+
+}
+
+void listAvaliable(struct memory *memory) {
+  
+  int i = 0;
+  int flag = 0; // is set to 1 if we have open space
+  while (i < memory[0].listLength) {
+    if (memory[i+1].visited != -1) {
+      printf("(%lu,%lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
+      flag = 1;
+    }
+    else if (memory[i+1].head - memory[i].tail != 1) { // this will not be equal to 1 if the gap between is greater than 1
+      printf("(%lu,%lu) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
+      flag = 1;
+    }
+    i++;
+  }
+  if (flag == 1) {
+     printf("\n");
+     return;
+  }
+  else {
+    printf("NONE\n");
+  }
+
+}
+
+void find(struct memory *memory, struct memory process) {
+
+  int i = 0;
+  while (i < memory[0].listLength) {
+    if (strcmp(memory[i].pID, process.pID) == 0) {
+      printf("(%s,%lu,%lu)\n", memory[i].pID,memory[i].size,memory[i].head);
+      return;
+    }
+    i++;
+  }
+
+  printf("FAULT\n");
 
 }
 
@@ -115,12 +177,13 @@ void shiftLeft(struct memory *memory, int lastIdx) { //used in release
 void shiftRight(struct memory *memory, int startIdx) { // used in request
   
   int i = memory[0].listLength;
+  memory[i+1].visited = -1;
   while(i > startIdx) {
     memory[i+1] = memory[i];
     i--;
   }
   memory[0].listLength++;
-  
+
 };
 
 void program(FILE *file, char *typeFit, long unsigned totalSize) {
@@ -128,6 +191,8 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
   struct memory *allMemory = malloc(sizeof(allMemory)*totalSize+1);
   allMemory[0].listLength = 0; // we will use this to determine where we can insert into this array
   allMemory[0].totalSize = totalSize;
+  allMemory[0].visited = -1;
+  allMemory[0].fullLength = totalSize;
 
   // create temporary memSlot which will be used for current process
   char *task = malloc(sizeof(task)*16); // used for request, release, find, and list 
@@ -144,34 +209,29 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
         fscanf(file, "%s", task2);
         fscanf(file, "%ld", &process.size); 
         strcpy(process.pID, task2);
-        printf("%s %s %lu totalSize: %lu\n", task,task2, process.size, allMemory[0].totalSize);
         firstFIT(allMemory, process);
       }
 
       else if (strcmp(task, "RELEASE") == 0) {
         fscanf(file, "%s", task2);
         strcpy(process.pID, task2);
-        printf("%s %s totalSize:%lu\n", task,task2, allMemory[0].totalSize);
         release(allMemory, process);
       }
 
       else if (strcmp(task, "LIST") == 0) {
         fscanf(file, "%s", task2);
         if (strcmp(task2, "ASSIGNED") == 0) {
-           printf("%s %s totalSize:%lu\n", task,task2,allMemory[0].totalSize);
-           //listAssigned(allMemory);
+           listAssigned(allMemory);
         }
         else {
-          printf("%s %s totalSize:%lu\n", task,task2,allMemory[0].totalSize);
-           //listAvaliable(allMemory);
+           listAvaliable(allMemory);
         }
       } 
 
       else { // task == "FIND"
         fscanf(file, "%s", task2);
         strcpy(process.pID, task2);
-        printf("%s %s totalSize:%lu\n", task,task2,allMemory[0].totalSize);
-        //find(allMemory, process);
+        find(allMemory, process);
       }
 
     }
