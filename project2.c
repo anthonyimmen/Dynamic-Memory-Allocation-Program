@@ -123,6 +123,10 @@ void listAvaliable(struct memory *memory) {
   
   int i = 0;
   int flag = 0; // is set to 1 if we have open space
+  if (memory[0].listLength==0) { 
+        printf("(%lu, %lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail);
+        return;
+  }
   while (i < memory[0].listLength) {
     if (memory[i+1].visited != -1) {
       printf("(%lu, %lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
@@ -149,7 +153,7 @@ void find(struct memory *memory, struct memory process) {
   int i = 0;
   while (i < memory[0].listLength) {
     if (strcmp(memory[i].pID, process.pID) == 0) {
-      printf("(%s,%lu,%lu)\n", memory[i].pID,memory[i].size,memory[i].head);
+      printf("(%s, %lu, %lu)\n", memory[i].pID,memory[i].size,memory[i].head);
       return;
     }
     i++;
@@ -207,7 +211,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
 
       if (strcmp(task, "REQUEST") == 0) {
         fscanf(file, "%s", task2);
-        fscanf(file, "%ld", &process.size); 
+        fscanf(file, "%lu", &process.size); 
         strcpy(process.pID, task2);
         firstFIT(allMemory, process);
       }
