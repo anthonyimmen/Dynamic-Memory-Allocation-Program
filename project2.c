@@ -10,7 +10,7 @@ struct memory {
   long unsigned head;
   long unsigned tail;
   int listLength;           // this acts as a length for memory, it is stored in slot memory[0]
-  long unsigned totalSize;  // this is the total size in bytes of the memory array
+  long unsigned totalSize;  // this is the dynamic total size in bytes of the memory array
   int visited;
   long unsigned fullLength;
 
@@ -123,7 +123,7 @@ void listAvaliable(struct memory *memory) {
   
   int i = 0;
   int flag = 0; // is set to 1 if we have open space
-  if (memory[0].listLength==0 && memory[0].totalSize != 0) { // if list is empty
+  if (memory[0].listLength==0 && memory[0].totalSize == memory[0].fullLength) { // if list is empty
         printf("(%lu, %lu) \n", memory[0].fullLength-memory[i].tail, memory[i].tail);
         return;
   }
