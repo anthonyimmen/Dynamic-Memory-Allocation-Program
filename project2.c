@@ -187,7 +187,7 @@ void shiftLeft(struct memory *memory, int lastIdx) { //used in release
 void shiftRight(struct memory *memory, int startIdx) { // used in request
   
   int i = memory[0].listLength-1;
-  while(i > startIdx) {
+  while(i >= startIdx) {
     memory[i+1] = memory[i];
     i--;
   }
