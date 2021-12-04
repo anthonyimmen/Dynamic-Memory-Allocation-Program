@@ -34,7 +34,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
   int i = 0;
   int length = allMemory[0].listLength;
 
-  if (process.size == 0) {
+  if (process.size == 0) { // if process size == 0 dont allocate
     printf("FAIL REQUEST %s %lu\n", process.pID, process.size);
     return;
   }
@@ -111,7 +111,7 @@ void release(struct memory *memory, struct memory process) {
 void listAssigned(struct memory *memory) {
 
   int i = 0;
-  if (memory[0].listLength <= 0) { //get working for == 0
+  if (memory[0].listLength == 0) { 
     printf("NONE\n");
     return;
   }
@@ -174,7 +174,7 @@ void shiftLeft(struct memory *memory, int lastIdx) { //used in release
   struct memory temp = memory[i];
   struct memory temp2;
   memory[i].visited = 0;
-  while (i > lastIdx && lastIdx != 0) {
+  while (i > lastIdx) {
     temp2 = memory[i-1];
     memory[i-1] = temp;
     temp = temp2;
@@ -186,7 +186,7 @@ void shiftLeft(struct memory *memory, int lastIdx) { //used in release
 
 void shiftRight(struct memory *memory, int startIdx) { // used in request
   
-  int i = memory[0].listLength;
+  int i = memory[0].listLength-1;
   while(i > startIdx) {
     memory[i+1] = memory[i];
     i--;
