@@ -213,14 +213,14 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
         fscanf(file, "%s", task2);
         fscanf(file, "%lu", &process.size); 
         strcpy(process.pID, task2);
-        printf("yes\n");
+        printf("request\n");
         firstFIT(allMemory, process);
       }
 
       else if (strcmp(task, "RELEASE") == 0) {
         fscanf(file, "%s", task2);
         strcpy(process.pID, task2);
-        printf("yes\n");
+        printf("release\n");
         release(allMemory, process);
       }
 
@@ -228,11 +228,11 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
         fscanf(file, "%s", task2);
         if (strcmp(task2, "ASSIGNED") == 0) {
            listAssigned(allMemory);
-           printf("yes\n");
+           printf("assign\n");
         }
         else {
            listAvaliable(allMemory);
-           printf("yes\n");
+           printf("avaliable\n");
         }
       } 
 
