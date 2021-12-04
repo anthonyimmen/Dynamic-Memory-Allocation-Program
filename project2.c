@@ -44,7 +44,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
     allMemory[i].tail = process.size-1;
     allMemory[i].size = process.size;
     allMemory[0].listLength++;
-    allMemory[0].totalSize -= process.size;
+    allMemory[0].totalSize += process.size;
     strcpy(allMemory[i].pID, process.pID);
     printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
     return;
@@ -59,7 +59,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
         allMemory[i].head = allMemory[i-1].tail+1;
         allMemory[i].tail = allMemory[i].head+process.size-1;
         allMemory[i].size = process.size;
-        allMemory[0].totalSize -= process.size;
+        allMemory[0].totalSize += process.size;
         strcpy(allMemory[i].pID, process.pID);
         printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
         return;
@@ -152,7 +152,7 @@ void release(struct memory *memory, struct memory process) {
     if (strcmp(memory[i].pID, process.pID) == 0) {
         long unsigned headCPY = memory[i].head;
         long unsigned sizeCPY = memory[i].size;
-        memory[0].totalSize += memory[i].size;
+        memory[0].totalSize -= memory[i].size;
         shiftLeft(memory, i);
         printf("FREE %s %lu %lu\n", process.pID, sizeCPY, headCPY);
         return;
