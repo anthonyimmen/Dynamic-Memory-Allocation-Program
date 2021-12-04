@@ -38,12 +38,12 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
   if (length == 0 && process.size <= allMemory[0].totalSize) {
     allMemory[i].head = 0;
     allMemory[i].tail = process.size-1;
-    allMemory[0].listLength++;
     allMemory[i].size = process.size;
+    allMemory[i].visited = -1;
+    allMemory[0].listLength++;
     allMemory[0].totalSize -= process.size;
     strcpy(allMemory[i].pID, process.pID);
     printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
-    allMemory[i].visited = -1;
     return;
   }
 
@@ -56,10 +56,10 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
         allMemory[i].head = allMemory[i-1].tail+1;
         allMemory[i].tail = allMemory[i].head+process.size-1;
         allMemory[i].size = process.size;
+        allMemory[i].visited = -1;
         allMemory[0].totalSize -= process.size;
         strcpy(allMemory[i].pID, process.pID);
         printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
-        allMemory[i].visited = -1;
         return;
       }
 
@@ -165,9 +165,10 @@ void find(struct memory *memory, struct memory process) {
 
 void shiftLeft(struct memory *memory, int lastIdx) { //used in release
 
-  int i = memory[0].listLength;
+  int i = memory[0].listLength-1;
   struct memory temp = memory[i];
   struct memory temp2;
+  memory[i].visited = 0;
   while (i > lastIdx && lastIdx != 0) {
     temp2 = memory[i-1];
     memory[i-1] = temp;
