@@ -34,7 +34,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
   int i = 0;
   int length = allMemory[0].listLength;
 
-  if (process.size == 0) { // if process size == 0 dont allocate
+  if (process.size <= 0) { // if process size == 0 dont allocate
     printf("FAIL REQUEST %s %lu\n", process.pID, process.size);
     return;
   }
