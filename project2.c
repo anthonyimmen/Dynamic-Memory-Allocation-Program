@@ -111,7 +111,6 @@ void bestFIT(struct memory *allMemory, struct memory process) {
 
   while (i < length && process.size <= allMemory[0].totalSize) { // loop to find best slot
 
-  printf("h: %lu\n", allMemory[i+1].head);
     if (i == allMemory[0].listLength-1  && allMemory[0].fullLength-allMemory[i].tail < smallest) {
       smallest = allMemory[i+1].head - allMemory[i].tail;
       temp.head = allMemory[i].tail+1;
