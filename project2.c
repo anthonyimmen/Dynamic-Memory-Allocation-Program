@@ -33,6 +33,11 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
 
   int i = 0;
   int length = allMemory[0].listLength;
+
+  if (process.size == 0) {
+    printf("FAIL REQUEST %s %lu\n", process.pID, process.size);
+    return;
+  }
   
   // list is empty and we insert at front and shrink current empty slot
   if (length == 0 && process.size <= allMemory[0].totalSize) {
