@@ -128,7 +128,7 @@ void listAvaliable(struct memory *memory) {
         return;
   }
   while (i < memory[0].listLength) {
-    if (memory[i+1].visited != -1) {
+    if (memory[i+1].visited != -1 && memory[0].totalSize != 0) {
       printf("(%lu, %lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
