@@ -128,11 +128,11 @@ void listAvaliable(struct memory *memory) {
         return;
   }
   while (i < memory[0].listLength) {
-    if (memory[i+1].visited != -1 && memory[0].totalSize != 0) {
+    if (memory[i+1].visited != -1) {
       printf("(%lu, %lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
-    else if (memory[i+1].head - memory[i].tail != 1) { // this will not be equal to 1 if the gap between is greater than 1
+    else if (memory[i+1].head - memory[i].tail != 1 && memory[0].totalSize != 0) { // this will not be equal to 1 if the gap between is greater than 1
       printf("(%lu, %lu) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
