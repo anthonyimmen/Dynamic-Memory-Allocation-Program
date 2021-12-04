@@ -11,16 +11,15 @@ struct memory {
   long unsigned tail;
   int listLength;           // this acts as a length for memory, it is stored in slot memory[0]
   long unsigned totalSize;  // this is the dynamic total size in bytes of the memory array
-  int visited;
   long unsigned fullLength;
 
 }allMemory;
 
 // declare all functions 
 void firstFIT(struct memory *allMemory, struct memory process);
-void fillNEXT(struct memory *memory, struct memory process);
-void fillBEST(struct memory *memory, struct memory process);
-void fillWORST(struct memory *memory, struct memory process);
+void bestFIT(struct memory *memory, struct memory process);
+void nextFIT(struct memory *memory, struct memory process);
+void worstFIT(struct memory *memory, struct memory process);
 void release(struct memory *memory, struct memory process);
 void listAssigned(struct memory *memory);
 void listAvaliable(struct memory *memory);
@@ -44,7 +43,6 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
     allMemory[i].head = 0;
     allMemory[i].tail = process.size-1;
     allMemory[i].size = process.size;
-    allMemory[i].visited = -1;
     allMemory[0].listLength++;
     allMemory[0].totalSize -= process.size;
     strcpy(allMemory[i].pID, process.pID);
@@ -61,7 +59,6 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
         allMemory[i].head = allMemory[i-1].tail+1;
         allMemory[i].tail = allMemory[i].head+process.size-1;
         allMemory[i].size = process.size;
-        allMemory[i].visited = -1;
         allMemory[0].totalSize -= process.size;
         strcpy(allMemory[i].pID, process.pID);
         printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
@@ -77,15 +74,73 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
 
 };
 
-void fillNEXT(struct memory *memory, struct memory process) {
+void nextFIT(struct memory *memory, struct memory process) {
 
 };
 
-void fillBEST(struct memory *memory, struct memory process) {
+void bestFIT(struct memory *allMemory, struct memory process) {
+ 
+  int i = 0;
+  int length = allMemory[0].listLength;
+
+  if (process.size <= 0) { // if process size == 0 dont allocate
+    printf("FAIL REQUEST %s %lu\n", process.pID, process.size);
+    return;
+  }
   
+  // list is empty and we insert at front and shrink current empty slot
+  if (length == 0 && process.size <= allMemory[0].totalSize) {
+    allMemory[i].head = 0;
+    allMemory[i].tail = process.size-1;
+    allMemory[i].size = process.size;
+    allMemory[0].listLength++;
+    allMemory[0].totalSize -= process.size;
+    strcpy(allMemory[i].pID, process.pID);
+    printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
+    return;
+  }
+
+  struct memory temp;
+  long unsigned smallest = allMemory[0].fullLength;
+  temp.head = 0;
+  temp.tail = allMemory[0].fullLength-1;
+  strcpy(temp.pID, process.pID);
+  temp.size = process.size;
+
+  int j = i;
+
+  while (i < length && process.size <= allMemory[0].totalSize) { // loop to find best slot
+
+  printf("h: %lu\n", allMemory[i+1].head);
+    if (i == allMemory[0].listLength-1  && allMemory[0].fullLength-allMemory[i].tail < smallest) {
+      smallest = allMemory[i+1].head - allMemory[i].tail;
+      temp.head = allMemory[i].tail+1;
+      temp.tail = allMemory[i+1].head-1;
+      j = i;
+      break;
+    }
+
+    else if (allMemory[i+1].head - allMemory[i].tail < smallest && allMemory[i+1].head - allMemory[i].tail >= process.size) {
+      smallest = allMemory[i+1].head - allMemory[i].tail;
+      temp.head = allMemory[i].tail+1;
+      temp.tail = allMemory[i+1].head-1;
+      j = i;
+    }
+
+    i++;
+
+  }
+    shiftRight(allMemory, j);
+    j++;
+    allMemory[j] = temp;
+    allMemory[0].listLength++;
+    allMemory[0].totalSize -= process.size;
+    printf("ALLOCATED %s %lu\n", process.pID, allMemory[j].head);
+    return;
+
 };
 
-void fillWORST(struct memory *memory, struct memory process) {
+void worstFIT(struct memory *memory, struct memory process) {
   
 };
 
@@ -133,7 +188,7 @@ void listAvaliable(struct memory *memory) {
         return;
   }
   while (i < memory[0].listLength) {
-    if (memory[i+1].visited == 0 && memory[0].totalSize != 0) { // last peice of open in array
+    if (i == memory[0].listLength-1 && memory[0].totalSize != 0) { // last peice of open in array
       printf("(%lu, %lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
@@ -173,8 +228,6 @@ void shiftLeft(struct memory *memory, int lastIdx) { //used in release
   int i = memory[0].listLength-1;
   struct memory temp = memory[i];
   struct memory temp2;
-  memory[i].visited = -1;
-  memory[i+1].visited = 0;
   while (i > lastIdx) {
     temp2 = memory[i-1];
     memory[i-1] = temp;
@@ -201,16 +254,13 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
   struct memory *allMemory = malloc(sizeof(allMemory)*totalSize+1);
   allMemory[0].listLength = 0; // we will use this to determine where we can insert into this array
   allMemory[0].totalSize = totalSize;
-  allMemory[0].visited = -1;
   allMemory[0].fullLength = totalSize;
 
   // create temporary memSlot which will be used for current process
   char *task = malloc(sizeof(task)*16); // used for request, release, find, and list 
   char *task2 = malloc(sizeof(task2)*16); // used for list or for holding the pIDs name 
 
-  // determine which fit
-  if (strcmp(typeFit, "FIRSTFIT") == 0) {
-     
+    // determine which fit 
     while (fscanf(file, "%s", task) == 1) { 
 
       struct memory process; 
@@ -219,7 +269,18 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
         fscanf(file, "%s", task2);
         fscanf(file, "%lu", &process.size); 
         strcpy(process.pID, task2);
-        firstFIT(allMemory, process);
+        if (strcmp(typeFit, "FIRSTFIT") == 0) {
+          firstFIT(allMemory, process);
+        }
+        if (strcmp(typeFit, "BESTFIT") == 0) {
+          bestFIT(allMemory, process);
+        }
+        if (strcmp(typeFit, "WORSTFIT") == 0) {
+          worstFIT(allMemory, process);
+        }
+        if (strcmp(typeFit, "NEXTFIT") == 0) {
+          nextFIT(allMemory, process);
+        }
       }
 
       else if (strcmp(task, "RELEASE") == 0) {
@@ -247,21 +308,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
       else {
         //do nothing
       }
-    }
- 
-  }
-  else if (strcmp(typeFit, "NEXTFIT") == 0) {
-    //nextFIT(allMemory, file);
-  }
-
-  else if (strcmp(typeFit, "BESTFIT") == 0) {
-    //bestFIT(allMemory, file);
-  }
-
-  else {
-    //worstFIT(allMemory, file);
-  }
-  
+   }
 };
 
 
