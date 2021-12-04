@@ -123,17 +123,17 @@ void listAvaliable(struct memory *memory) {
   
   int i = 0;
   int flag = 0; // is set to 1 if we have open space
-  if (memory[0].listLength==0 && memory[0].totalSize != 0) { 
-        printf("(%lu, %lu) \n", memory[0].fullLength-memory[i].tail, memory[i].tail);
+  if (memory[0].listLength==0 && memory[0].totalSize != 0) { // if list is empty
+        printf("(%lu, %lu) +\n", memory[0].fullLength-memory[i].tail, memory[i].tail);
         return;
   }
   while (i < memory[0].listLength) {
-    if (memory[i+1].visited != -1 && memory[0].totalSize != 0) {
-      printf("(%lu, %lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
+    if (memory[i+1].visited != -1 && memory[0].totalSize != 0) { // last peice of open in array
+      printf("(%lu, %lu) #", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
-    else if (memory[i+1].head - memory[i].tail != 1 && memory[0].totalSize != 0) { // this will not be equal to 1 if the gap between is greater than 1
-      printf("(%lu, %lu) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
+    else if (memory[i+1].head - memory[i].tail != 1 && memory[0].totalSize != 0) { // this will not be equal to 1 if the gap between is greater than 1, for any normal gap
+      printf("(%lu, %lu) !", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
     i++;
