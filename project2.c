@@ -123,7 +123,7 @@ void listAvaliable(struct memory *memory) {
   
   int i = 0;
   int flag = 0; // is set to 1 if we have open space
-  if (memory[0].listLength==0) { 
+  if (memory[0].listLength==0 && memory[i+1].head - memory[i].tail != 1) { 
         printf("(%lu, %lu) \n", memory[0].fullLength-memory[i].tail, memory[i].tail);
         return;
   }
@@ -143,7 +143,7 @@ void listAvaliable(struct memory *memory) {
      return;
   }
   else {
-    printf("NONE\n");
+    printf("FULL\n");
   }
 
 }
