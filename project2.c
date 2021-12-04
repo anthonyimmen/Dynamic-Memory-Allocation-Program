@@ -5,13 +5,13 @@
 
 struct memory {
 
-  long unsigned size;       // the size of the process
+  long size;       // the size of the process
   char pID[16];             // the id of the process 
-  long unsigned head;
-  long unsigned tail;
+  long head;
+  long tail;
   int listLength;           // this acts as a length for memory, it is stored in slot memory[0]
-  long unsigned totalSize;  // this is the dynamic total size in bytes of the memory array
-  long unsigned fullLength;
+  long totalSize;  // this is the dynamic total size in bytes of the memory array
+  long fullLength;
 
 }allMemory;
 
@@ -26,7 +26,7 @@ void listAvaliable(struct memory *memory);
 void find(struct memory *memory, struct memory process);
 void shiftLeft(struct memory *memory, int lastIdx);
 void shiftRight(struct memory *memory, int startIdx);
-void program(FILE *file, char *typeFit, long unsigned totalSize);
+void program(FILE *file, char *typeFit, long totalSize);
 
  void firstFIT(struct memory *allMemory, struct memory process) {
 
@@ -45,7 +45,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize);
     allMemory[i].size = process.size;
     allMemory[0].listLength++;
     allMemory[0].totalSize += process.size;
-    strcpy(allMemory[i].pID, process.pID);
+    strcpy(allMemory[i].pID, process.pID); 
     printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
     return;
   }
@@ -101,7 +101,7 @@ void bestFIT(struct memory *allMemory, struct memory process) {
   }
 
   struct memory temp;
-  long unsigned smallest = allMemory[0].fullLength;
+  long smallest = allMemory[0].fullLength;
   temp.head = 0;
   temp.tail = allMemory[0].fullLength-1;
   strcpy(temp.pID, process.pID);
@@ -150,8 +150,8 @@ void release(struct memory *memory, struct memory process) {
   int i = 0;
   while (i < memory[0].listLength) {
     if (strcmp(memory[i].pID, process.pID) == 0) {
-        long unsigned headCPY = memory[i].head;
-        long unsigned sizeCPY = memory[i].size;
+        long headCPY = memory[i].head;
+        long sizeCPY = memory[i].size;
         memory[0].totalSize -= memory[i].size;
         shiftLeft(memory, i);
         printf("FREE %s %lu %lu\n", process.pID, sizeCPY, headCPY);
@@ -248,7 +248,7 @@ void shiftRight(struct memory *memory, int startIdx) { // used in request
 
 };
 
-void program(FILE *file, char *typeFit, long unsigned totalSize) {
+void program(FILE *file, char *typeFit, long totalSize) {
 
   struct memory *allMemory = malloc(sizeof(allMemory)*totalSize+1);
   allMemory[0].listLength = 0; // we will use this to determine where we can insert into this array
@@ -314,7 +314,7 @@ void program(FILE *file, char *typeFit, long unsigned totalSize) {
 int main(int argc, char** argv) {
 
   char *typeFit = argv[1];
-  long unsigned totalMemSize = strtol(argv[2], NULL, 10); // size will be from 2^k, 4<=k<=30
+  long totalMemSize = strtol(argv[2], NULL, 10); // size will be from 2^k, 4<=k<=30
   FILE *file = fopen(argv[3], "r");                       
   program(file, typeFit, totalMemSize);
 
