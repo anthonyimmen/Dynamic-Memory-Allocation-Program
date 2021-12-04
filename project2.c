@@ -173,7 +173,8 @@ void shiftLeft(struct memory *memory, int lastIdx) { //used in release
   int i = memory[0].listLength-1;
   struct memory temp = memory[i];
   struct memory temp2;
-  memory[i].visited = 0;
+  memory[i].visited = -1;
+  memory[i+1].visited = 0;
   while (i > lastIdx) {
     temp2 = memory[i-1];
     memory[i-1] = temp;
