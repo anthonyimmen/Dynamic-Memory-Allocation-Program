@@ -128,7 +128,7 @@ void listAvaliable(struct memory *memory) {
         return;
   }
   while (i < memory[0].listLength) {
-    if (memory[i+1].visited != -1 && memory[0].totalSize != 0) { // last peice of open in array
+    if (memory[i+1].visited == 0 && memory[0].totalSize != 0) { // last peice of open in array
       printf("(%lu, %lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
@@ -167,8 +167,6 @@ void shiftLeft(struct memory *memory, int lastIdx) { //used in release
 
   int i = memory[0].listLength;
   struct memory temp = memory[i];
-  //temp.visited = -1;
-  memory[i+1].visited = 0;
   struct memory temp2;
   while (i > lastIdx && lastIdx != 0) {
     temp2 = memory[i-1];
@@ -183,7 +181,6 @@ void shiftLeft(struct memory *memory, int lastIdx) { //used in release
 void shiftRight(struct memory *memory, int startIdx) { // used in request
   
   int i = memory[0].listLength;
-  memory[i+1].visited = -1;
   while(i > startIdx) {
     memory[i+1] = memory[i];
     i--;
