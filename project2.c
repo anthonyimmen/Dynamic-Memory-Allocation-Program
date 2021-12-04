@@ -6,10 +6,10 @@
 struct memory {
 
   long size;       // the size of the process
-  char pID[16];             // the id of the process 
+  char pID[16];    // the id of the process 
   long head;
   long tail;
-  int listLength;           // this acts as a length for memory, it is stored in slot memory[0]
+  int listLength;  // this acts as a length for memory, it is stored in slot memory[0]
   long totalSize;  // this is the dynamic total size in bytes of the memory array
   long fullLength;
 
@@ -34,7 +34,7 @@ void program(FILE *file, char *typeFit, long totalSize);
   int length = allMemory[0].listLength;
 
   if (process.size <= 0) { // if process size == 0 dont allocate
-    printf("FAIL REQUEST %s %lu\n", process.pID, process.size);
+    printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
     return;
   }
   
@@ -46,7 +46,7 @@ void program(FILE *file, char *typeFit, long totalSize);
     allMemory[0].listLength++;
     allMemory[0].totalSize += process.size;
     strcpy(allMemory[i].pID, process.pID); 
-    printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
+    printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
     return;
   }
 
@@ -61,7 +61,7 @@ void program(FILE *file, char *typeFit, long totalSize);
         allMemory[i].size = process.size;
         allMemory[0].totalSize += process.size;
         strcpy(allMemory[i].pID, process.pID);
-        printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
+        printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
         return;
       }
 
@@ -69,7 +69,7 @@ void program(FILE *file, char *typeFit, long totalSize);
 
   }
 
-  printf("FAIL REQUEST %s %lu\n", process.pID, process.size);
+  printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
   return;
 
 };
@@ -84,7 +84,7 @@ void bestFIT(struct memory *allMemory, struct memory process) {
   int length = allMemory[0].listLength;
 
   if (process.size <= 0) { // if process size == 0 dont allocate
-    printf("FAIL REQUEST %s %lu\n", process.pID, process.size);
+    printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
     return;
   }
   
@@ -96,7 +96,7 @@ void bestFIT(struct memory *allMemory, struct memory process) {
     allMemory[0].listLength++;
     allMemory[0].totalSize -= process.size;
     strcpy(allMemory[i].pID, process.pID);
-    printf("ALLOCATED %s %lu\n", process.pID, allMemory[i].head);
+    printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
     return;
   }
 
@@ -134,7 +134,7 @@ void bestFIT(struct memory *allMemory, struct memory process) {
     allMemory[j] = temp;
     allMemory[0].listLength++;
     allMemory[0].totalSize -= process.size;
-    printf("ALLOCATED %s %lu\n", process.pID, allMemory[j].head);
+    printf("ALLOCATED %s %ld\n", process.pID, allMemory[j].head);
     return;
 
 };
@@ -154,7 +154,7 @@ void release(struct memory *memory, struct memory process) {
         long sizeCPY = memory[i].size;
         memory[0].totalSize -= memory[i].size;
         shiftLeft(memory, i);
-        printf("FREE %s %lu %lu\n", process.pID, sizeCPY, headCPY);
+        printf("FREE %s %ld %ld\n", process.pID, sizeCPY, headCPY);
         return;
     }
     i++;
@@ -171,7 +171,7 @@ void listAssigned(struct memory *memory) {
   }
 
   while (i < memory[0].listLength) {
-    printf("(%s, %lu, %lu) ", memory[i].pID,memory[i].size,memory[i].head);
+    printf("(%s, %ld, %ld) ", memory[i].pID,memory[i].size,memory[i].head);
     i++;
   }
   printf("\n");
@@ -183,16 +183,16 @@ void listAvaliable(struct memory *memory) {
   int i = 0;
   int flag = 0; // is set to 1 if we have open space
   if (memory[0].listLength==0 && memory[0].totalSize == memory[0].fullLength) { // if list is empty
-        printf("(%lu, %lu) \n", memory[0].fullLength-memory[i].tail, memory[i].tail);
+        printf("(%ld, %ld) \n", memory[0].fullLength-memory[i].tail, memory[i].tail);
         return;
   }
   while (i < memory[0].listLength) {
     if (i == memory[0].listLength-1 && memory[0].totalSize != 0) { // last peice of open in array
-      printf("(%lu, %lu) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
+      printf("(%ld, %ld) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
     else if (memory[i+1].head - memory[i].tail != 1 && memory[0].totalSize != 0) { // this will not be equal to 1 if the gap between is greater than 1, for any normal gap
-      printf("(%lu, %lu) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
+      printf("(%ld, %ld) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
     i++;
@@ -212,7 +212,7 @@ void find(struct memory *memory, struct memory process) {
   int i = 0;
   while (i < memory[0].listLength) {
     if (strcmp(memory[i].pID, process.pID) == 0) {
-      printf("(%s, %lu, %lu)\n", memory[i].pID,memory[i].size,memory[i].head);
+      printf("(%s, %ld, %ld)\n", memory[i].pID,memory[i].size,memory[i].head);
       return;
     }
     i++;
@@ -266,7 +266,7 @@ void program(FILE *file, char *typeFit, long totalSize) {
 
       if (strcmp(task, "REQUEST") == 0) {
         fscanf(file, "%s", task2);
-        fscanf(file, "%lu", &process.size); 
+        fscanf(file, "%ld", &process.size); 
         strcpy(process.pID, task2);
         if (strcmp(typeFit, "FIRSTFIT") == 0) {
           firstFIT(allMemory, process);
