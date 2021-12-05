@@ -195,6 +195,11 @@ void listAvaliable(struct memory *memory) {
   
   int i = 0;
   int flag = 0; // is set to 1 if we have open space
+
+  if (memory[0].fullLength == memory[0].totalSize) {
+    printf("FULL\n");
+    return;
+  }
   if (memory[0].listLength==0 && memory[0].totalSize == 0) { // if list is empty
         printf("(%ld, %ld) \n", memory[0].fullLength-memory[i].tail, memory[i].tail);
         return;
