@@ -214,11 +214,18 @@ void listAvaliable(struct memory *memory, struct memoryInfo *memoryInfo) {
 
   while (i < memoryInfo->listLength) {
 
+
+    if(memory[i].head != 0 && i == 0) { //if the empty space is first in the memory
+      printf("(%ld, %d) ", memory[i].head-0, 0);
+     
+    }
     if (i == memoryInfo->listLength-1) { // last peice of open in array
       printf("(%ld, %ld) ", memoryInfo->fullLength-memory[i].tail-1, memory[i].tail+1);
+      
     }
     else if (memory[i+1].head - memory[i].tail != 1) { // this will not be equal to 1 if the gap between is greater than 1, for any normal gap
       printf("(%ld, %ld) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
+     
     }
     i++;
 
