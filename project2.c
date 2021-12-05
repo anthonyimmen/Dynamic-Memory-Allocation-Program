@@ -220,10 +220,16 @@ void listAvaliable(struct memory *memory, struct memoryInfo *memoryInfo) {
      
     }
     if (i == memoryInfo->listLength-1) { // last peice of open in array
+      if (memoryInfo->fullLength-memory[i].tail-1 == 0) {
+        continue;
+      }
       printf("(%ld, %ld) ", memoryInfo->fullLength-memory[i].tail-1, memory[i].tail+1);
       
     }
     else if (memory[i+1].head - memory[i].tail != 1) { // this will not be equal to 1 if the gap between is greater than 1, for any normal gap
+      if (memory[i+1].head-memory[i].tail-1 == 0) {
+        continue;
+      }
       printf("(%ld, %ld) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
      
     }
