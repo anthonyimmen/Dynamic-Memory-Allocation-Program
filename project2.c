@@ -20,6 +20,8 @@ struct memoryInfo {
 
 }allMemoryInfo;
 
+int lastIdx = -1;
+
 // declare all functions 
 void firstFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo);
 void bestFIT(struct memory *memory, struct memory process, struct memoryInfo *memoryInfo);
@@ -94,7 +96,7 @@ void program(FILE *file, char *typeFit, long totalSize);
 
 };
 
-void nextFIT(struct memory *memory, struct memory process, struct memoryInfo *memoryInfo) {
+void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) {
 
 };
 
@@ -168,6 +170,11 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
   // releases the memory held the the specified process
   
   int i = 0;
+
+  if (i < lastIdx) {
+    lastIdx--;
+  }
+
   while (i < memoryInfo->listLength) {
     if (strcmp(memory[i].pID, process.pID) == 0) {
         long headCPY = memory[i].head;
@@ -180,6 +187,7 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
     i++;
   }
   printf("FAIL RELEASE %s\n", process.pID);
+
 }
 
 void listAssigned(struct memory *memory, struct memoryInfo *memoryInfo) {
@@ -214,10 +222,8 @@ void listAvaliable(struct memory *memory, struct memoryInfo *memoryInfo) {
 
   while (i < memoryInfo->listLength) {
 
-
     if(memory[i].head != 0 && i == 0) { //if the empty space is first in the memory
       printf("(%ld, %d) ", memory[i].head-0, 0);
-     
     }
     if (i == memoryInfo->listLength-1) { // last peice of open in array
       if (memoryInfo->fullLength-memory[i].tail-1 == 0) {
