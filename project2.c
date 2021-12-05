@@ -39,7 +39,7 @@ void program(FILE *file, char *typeFit, long totalSize);
   }
   
   // list is empty and we insert at front and shrink current empty slot
-  if (length == 0 && process.size <= allMemory[0].totalSize) {
+  if (length == 0 && process.size <= allMemory[0].fullLength - allMemory[0].totalSize) {
     allMemory[i].head = 0;
     allMemory[i].tail = process.size-1;
     allMemory[i].size = process.size;
@@ -50,8 +50,21 @@ void program(FILE *file, char *typeFit, long totalSize);
     return;
   }
 
-    while (i < length && process.size <= allMemory[0].totalSize) {
+    while (i < length && process.size <= allMemory[0].fullLength - allMemory[0].totalSize) {
 
+
+      if (i == allMemory[0].listLength-1 && allMemory[0].fullLength - allMemory[i].tail >= process.size) { // we are inserting into last open space
+        shiftRight(allMemory, i);
+        i++; //increment i so we insert into the new open slot
+        allMemory[i].head = allMemory[i-1].tail+1;
+        allMemory[i].tail = allMemory[i].head+process.size-1;
+        allMemory[i].size = process.size;
+        allMemory[0].totalSize += process.size;
+        strcpy(allMemory[i].pID, process.pID);
+        printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
+        return;
+
+      }
       if (allMemory[i+1].head - allMemory[i].tail >= process.size) {
         // shift everything down so it will be in order then insert element into the new slot
         shiftRight(allMemory, i);
@@ -89,12 +102,12 @@ void bestFIT(struct memory *allMemory, struct memory process) {
   }
   
   // list is empty and we insert at front and shrink current empty slot
-  if (length == 0 && process.size <= allMemory[0].totalSize) {
+  if (length == 0 && process.size <= allMemory[0].fullLength - allMemory[0].totalSize) {
     allMemory[i].head = 0;
     allMemory[i].tail = process.size-1;
     allMemory[i].size = process.size;
     allMemory[0].listLength++;
-    allMemory[0].totalSize -= process.size;
+    allMemory[0].totalSize += process.size;
     strcpy(allMemory[i].pID, process.pID);
     printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
     return;
@@ -109,7 +122,7 @@ void bestFIT(struct memory *allMemory, struct memory process) {
 
   int j = i;
 
-  while (i < length && process.size <= allMemory[0].totalSize) { // loop to find best slot
+  while (i < length && process.size <= allMemory[0].fullLength - allMemory[0].totalSize) { // loop to find best slot
 
     if (i == allMemory[0].listLength-1  && allMemory[0].fullLength-allMemory[i].tail < smallest) {
       smallest = allMemory[i+1].head - allMemory[i].tail;
@@ -133,7 +146,7 @@ void bestFIT(struct memory *allMemory, struct memory process) {
     j++;
     allMemory[j] = temp;
     allMemory[0].listLength++;
-    allMemory[0].totalSize -= process.size;
+    allMemory[0].totalSize += process.size;
     printf("ALLOCATED %s %ld\n", process.pID, allMemory[j].head);
     return;
 
@@ -182,16 +195,16 @@ void listAvaliable(struct memory *memory) {
   
   int i = 0;
   int flag = 0; // is set to 1 if we have open space
-  if (memory[0].listLength==0 && memory[0].totalSize == memory[0].fullLength) { // if list is empty
+  if (memory[0].listLength==0 && memory[0].totalSize == 0) { // if list is empty
         printf("(%ld, %ld) \n", memory[0].fullLength-memory[i].tail, memory[i].tail);
         return;
   }
   while (i < memory[0].listLength) {
-    if (i == memory[0].listLength-1 && memory[0].totalSize != 0) { // last peice of open in array
+    if (i == memory[0].listLength-1) { // last peice of open in array
       printf("(%ld, %ld) ", memory[0].fullLength-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
-    else if (memory[i+1].head - memory[i].tail != 1 && memory[0].totalSize != 0) { // this will not be equal to 1 if the gap between is greater than 1, for any normal gap
+    else if (memory[i+1].head - memory[i].tail != 1) { // this will not be equal to 1 if the gap between is greater than 1, for any normal gap
       printf("(%ld, %ld) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
       flag = 1;
     }
@@ -252,7 +265,7 @@ void program(FILE *file, char *typeFit, long totalSize) {
 
   struct memory *allMemory = malloc(sizeof(allMemory)*totalSize+1);
   allMemory[0].listLength = 0; // we will use this to determine where we can insert into this array
-  allMemory[0].totalSize = totalSize;
+  allMemory[0].totalSize = 0;
   allMemory[0].fullLength = totalSize;
 
   // create temporary memSlot which will be used for current process
