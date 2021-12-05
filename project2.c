@@ -171,10 +171,6 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
   
   int i = 0;
 
-  if (i < lastIdx) {
-    lastIdx--;
-  }
-
   while (i < memoryInfo->listLength) {
     if (strcmp(memory[i].pID, process.pID) == 0) {
         long headCPY = memory[i].head;
