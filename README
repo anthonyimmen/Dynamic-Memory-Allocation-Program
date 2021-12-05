@@ -10,7 +10,7 @@ This project's goal is to simulate four memory allocation algorithms. Based off 
 
 Brief Description of functions: 
 
-firstFIT() - This function is what places our memory within the first avaliable slot. I check if the process size is <= then we do not insert it into our array. If the list is empty, we insert it into the first avaliable spot, being at index 0 of the array. 
+firstFIT() - This function is what places our memory within the first avaliable slot. I check if the process size is <= 0 then we do not insert it into our array. If the list is empty, we insert it into the first avaliable spot, being at index 0 of the array. We then iterated over the rest of the slots within the memory, then insert the memory into the first avaliable spot that will fit the process.
 
 bestFIT() - Was not able to get working. I had a similar implementation to firstFIT, but I had an intital while loop which iterated through the entire memory array to find the smallest empty slot which still fit the process.
 
