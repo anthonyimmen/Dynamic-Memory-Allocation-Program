@@ -20,7 +20,7 @@ struct memoryInfo {
 
 }allMemoryInfo;
 
-long lastIdx = -1;
+long lastIdxNEXT = -1;
 
 // declare all functions 
 void firstFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo);
@@ -98,7 +98,7 @@ void program(FILE *file, char *typeFit, long totalSize);
 
 void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) {
  
-  int i = lastIdx;
+  int i = lastIdxNEXT;
   int length = allMemoryInfo->listLength;
   int flag = 0;
   
@@ -111,7 +111,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
     allMemoryInfo->totalSize += process.size;
     strcpy(allMemory[0].pID, process.pID);
     printf("ALLOCATED %s %d\n", process.pID, 0);
-    lastIdx = 0;
+    lastIdxNEXT = 0;
     return;
   }
 
@@ -150,7 +150,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
      i = 0; // reset i so we can run through first part of memory
 
-    while (i < lastIdx && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) { // loop to find best slot
+    while (i < lastIdxNEXT && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) { // loop to find best slot
 
     if(allMemory[i].head != 0 && i == 0) { //if the empty space is first in the memory
       
@@ -187,7 +187,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       allMemory[i] = temp;
       allMemoryInfo->totalSize += process.size;
       printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
-      lastIdx = i;
+      lastIdxNEXT = i;
       return;
     }
     else {
@@ -368,7 +368,9 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
         long headCPY = memory[i].head;
         long sizeCPY = memory[i].size;
         memoryInfo->totalSize -= memory[i].size;
-        lastIdx--;
+        if (i < lastIdxNEXT) {
+          lastIdxNEXT--;
+        }
         shiftLeft(memory, i, memoryInfo);
         printf("FREE %s %ld %ld\n", process.pID, sizeCPY, headCPY);
         return;
