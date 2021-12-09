@@ -142,7 +142,6 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
         temp.tail = temp.head+process.size-1;
         j = i;
         flag=1;
-        break;
       }
 
     }
@@ -153,10 +152,9 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       temp.tail = temp.head+process.size-1;
       j = i;
       flag=1;
-      break;
     }
 
-    else if (allMemory[i+1].head - allMemory[i].tail < smallest && allMemory[i+1].head - allMemory[i].tail >= process.size) { //if empty is anything in between
+    if (allMemory[i+1].head - allMemory[i].tail < smallest && allMemory[i+1].head - allMemory[i].tail >= process.size) { //if empty is anything in between
       smallest = allMemory[i+1].head - allMemory[i].tail-1;
       temp.head = allMemory[i].tail+1;
       temp.tail = temp.head+process.size-1;
