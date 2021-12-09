@@ -104,13 +104,14 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
  
   int i = 0;
   int length = allMemoryInfo->listLength;
+  int flag = 0;
 
   if (process.size <= 0) { // if process size == 0 dont allocate
     printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
     return;
   }
   
-  // list is empty and we insert at front and shrink current empty slot
+  // list is empty and we insert at front 
   if (length == 0 && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) {
     allMemory[i].head = 0;
     allMemory[i].tail = process.size-1;
@@ -119,6 +120,7 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
     allMemoryInfo->totalSize += process.size;
     strcpy(allMemory[i].pID, process.pID);
     printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
+    flag=1;
     return;
   }
 
@@ -133,31 +135,52 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
   while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) { // loop to find best slot
 
-    if (i == allMemoryInfo->listLength-1  && allMemoryInfo->fullLength-allMemory[i].tail < smallest) {
+    if(allMemory[i].head != 0 && i == 0) { //if the empty space is first in the memory
+      
+      if (allMemory[i].head < smallest) {
+        smallest = allMemory[i].head;
+        temp.head = 0;
+        temp.tail = allMemory[i].head-1;
+        j = i;
+        flag=1;
+       break;
+    }
+
+    }
+
+    if (i == allMemoryInfo->listLength-1  && allMemoryInfo->fullLength-allMemory[i].tail < smallest) { //if empty space is last
       smallest = allMemory[i+1].head - allMemory[i].tail;
       temp.head = allMemory[i].tail+1;
       temp.tail = allMemory[i+1].head-1;
       j = i;
+      flag=1;
       break;
     }
 
-    else if (allMemory[i+1].head - allMemory[i].tail < smallest && allMemory[i+1].head - allMemory[i].tail >= process.size) {
+    else if (allMemory[i+1].head - allMemory[i].tail < smallest && allMemory[i+1].head - allMemory[i].tail >= process.size) { //if empty is anything in between
       smallest = allMemory[i+1].head - allMemory[i].tail;
       temp.head = allMemory[i].tail+1;
       temp.tail = allMemory[i+1].head-1;
       j = i;
+      flag=1;
     }
 
     i++;
 
   }
-    shiftRight(allMemory, j, allMemoryInfo);
-    j++;
-    allMemory[j] = temp;
-    allMemoryInfo->listLength++;
-    allMemoryInfo->totalSize += process.size;
-    printf("ALLOCATED %s %ld\n", process.pID, allMemory[j].head);
-    return;
+    if (flag == 1) {
+      shiftRight(allMemory, j, allMemoryInfo);
+      j++;
+      allMemory[j] = temp;
+      allMemoryInfo->listLength++;
+      allMemoryInfo->totalSize += process.size;
+      printf("ALLOCATED %s %ld\n", process.pID, allMemory[j].head);
+      return;
+    }
+    else {
+      printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
+      return;
+    }
 
 };
 
@@ -206,20 +229,20 @@ void listAvaliable(struct memory *memory, struct memoryInfo *memoryInfo) {
   
   int i = 0;
 
+  if (memoryInfo->listLength==0) { // if list is empty
+        printf("(%ld, %ld) \n", memoryInfo->fullLength, 0);
+        return;
+  }
+
   if (memoryInfo->fullLength == memoryInfo->totalSize) { // if list is full
     printf("FULL\n");
     return;
   }
 
-  if (memoryInfo->listLength==0 && memoryInfo->totalSize == 0) { // if list is empty
-        printf("(%ld, %ld) \n", memoryInfo->fullLength-memory[i].tail, memory[i].tail);
-        return;
-  }
-
   while (i < memoryInfo->listLength) {
 
     if(memory[i].head != 0 && i == 0) { //if the empty space is first in the memory
-      printf("(%ld, %d) ", memory[i].head-0, 0);
+      printf("(%ld, %d) ", memory[i].head, 0);
     }
     if (i == memoryInfo->listLength-1) { // last peice of open in array
       if (memoryInfo->fullLength-memory[i].tail-1 == 0) {
@@ -229,11 +252,8 @@ void listAvaliable(struct memory *memory, struct memoryInfo *memoryInfo) {
       printf("(%ld, %ld) ", memoryInfo->fullLength-memory[i].tail-1, memory[i].tail+1);
       
     }
-    else if (memory[i+1].head - memory[i].tail != 1) { // this will not be equal to 1 if the gap between is greater than 1, for any normal gap
-      if (memory[i+1].head-memory[i].tail-1 == 0) {
-        i++;
-        continue;
-      }
+    else if (memory[i+1].head - memory[i].tail > 1) { // this will not be equal to 1 if the gap between is greater than 1, for any normal gap
+      
       printf("(%ld, %ld) ", memory[i+1].head-memory[i].tail-1, memory[i].tail+1);
      
     }
