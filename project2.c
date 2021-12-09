@@ -20,7 +20,7 @@ struct memoryInfo {
 
 }allMemoryInfo;
 
-long lastIdxNEXT = -1;
+long lastIdxNEXT = 0;
 
 // declare all functions 
 void firstFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo);
@@ -133,13 +133,12 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
         break;
       }
 
-      //if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
-        else {
-          temp.head = allMemory[i].tail+1;
-          temp.tail = temp.head+process.size-1;
-          flag=1;
-          break;
-        }
+      if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
+        temp.head = allMemory[i].tail+1;
+        temp.tail = temp.head+process.size-1;
+        flag=1;
+        break;
+      }
 
       i++;
 
@@ -171,13 +170,12 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       break;
     }
 
-    //if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
-      else {
-        temp.head = allMemory[i].tail+1;
-        temp.tail = temp.head+process.size-1;
-        flag=1;
-        break;
-      }
+    if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
+      temp.head = allMemory[i].tail+1;
+      temp.tail = temp.head+process.size-1;
+      flag=1;
+      break;
+    }
 
     i++;
 
@@ -377,7 +375,7 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
         long headCPY = memory[i].head;
         long sizeCPY = memory[i].size;
         memoryInfo->totalSize -= memory[i].size;
-        if (i > lastIdxNEXT) {
+        if (i < lastIdxNEXT) {
           lastIdxNEXT--;
         }
         shiftLeft(memory, i, memoryInfo);
