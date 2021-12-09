@@ -130,15 +130,6 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
   while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) { // loop to find best slot
 
-    if(allMemory[i].head != 0 && i == 0) { //if the empty space is first in the memory
-      
-      if (process.size <= allMemory[i].head) {
-        temp.head = 0;
-        temp.tail = temp.head+process.size-1;
-        flag=1;
-      }
-
-    }
 
     if (i == allMemoryInfo->listLength-1  && process.size <= allMemoryInfo->fullLength-allMemory[i].tail-1 && flag == 0) { //if empty space is last
       temp.head = allMemory[i].tail+1;
