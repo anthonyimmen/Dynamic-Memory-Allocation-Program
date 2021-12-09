@@ -101,6 +101,12 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
   int i = lastIdxNEXT;
   int length = allMemoryInfo->listLength;
   int flag = 0;
+
+  struct memory temp;
+  temp.head = 0;
+  temp.tail = allMemoryInfo->fullLength-1;
+  strcpy(temp.pID, process.pID);
+  temp.size = process.size;
   
   // list is empty and we insert at front 
   if (length == 0 && process.size <= allMemoryInfo->fullLength) {
@@ -115,19 +121,14 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
     return;
   }
 
-  struct memory temp;
-  temp.head = 0;
-  temp.tail = allMemoryInfo->fullLength-1;
-  strcpy(temp.pID, process.pID);
-  temp.size = process.size;
-
   if (allMemoryInfo->listLength > 0) {
 
     while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize && length > 0) { // loop to find best slot
 
 
       if (i == allMemoryInfo->listLength-1  && process.size <= allMemoryInfo->fullLength-allMemory[i].tail-1 && flag == 0) { //if empty space is last
-        temp.head = allMemory[i].tail+1;
+
+        temp.head = (allMemory[i].tail + 1);
         temp.tail = temp.head+process.size-1;
         flag=1;
         break;
@@ -183,18 +184,20 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
   }
     if (flag == 1) {
-
       if (i == allMemoryInfo->listLength-1) {
+        allMemoryInfo->listLength++;
+        allMemory[i+1] = temp;
         lastIdxNEXT = allMemoryInfo->listLength;
+        allMemoryInfo->totalSize += process.size;
+        printf("ALLOCATED %s %ld\n", process.pID, allMemory[i+1].head);
       }
       else {
-        lastIdxNEXT = i;
+        shiftRight(allMemory, i, allMemoryInfo);
+        allMemory[i] = temp;
+        lastIdxNEXT = i ;
+        allMemoryInfo->totalSize += process.size;
+        printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
       }
-
-      shiftRight(allMemory, i, allMemoryInfo);
-      allMemory[i] = temp;
-      allMemoryInfo->totalSize += process.size;
-      printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
       return;
     }
     else {
