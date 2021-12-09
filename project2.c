@@ -97,6 +97,111 @@ void program(FILE *file, char *typeFit, long totalSize);
 };
 
 void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) {
+ 
+  int i = lastIdx;
+  int length = allMemoryInfo->listLength;
+  int flag = 0;
+
+  if (process.size <= 0) { // if process size == 0 dont allocate
+    printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
+    return;
+  }
+  
+  // list is empty and we insert at front 
+  if (length == 0 && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) {
+    allMemory[0].head = 0;
+    allMemory[0].tail = process.size-1;
+    allMemory[0].size = process.size;
+    allMemoryInfo->listLength++;
+    allMemoryInfo->totalSize += process.size;
+    strcpy(allMemory[0].pID, process.pID);
+    printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
+    lastIdx = 0;
+    return;
+  }
+
+  struct memory temp;
+  temp.head = 0;
+  temp.tail = allMemoryInfo->fullLength-1;
+  strcpy(temp.pID, process.pID);
+  temp.size = process.size;
+
+  i = lastIdx;
+
+  while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) { // loop to find best slot
+
+    if(allMemory[i].head != 0 && i == 0) { //if the empty space is first in the memory
+      
+      if (process.size <= allMemory[i].head) {
+        temp.head = 0;
+        temp.tail = temp.head+process.size-1;
+        flag=1;
+      }
+
+    }
+
+    if (i == allMemoryInfo->listLength-1  && process.size <= allMemoryInfo->fullLength-allMemory[i].tail-1 && flag == 0) { //if empty space is last
+      temp.head = allMemory[i].tail+1;
+      temp.tail = temp.head+process.size-1;
+      flag=1;
+    }
+
+    if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
+      temp.head = allMemory[i].tail+1;
+      temp.tail = temp.head+process.size-1;
+      flag=1;
+    }
+
+    i++;
+
+  }
+
+
+  if (flag == 0) {
+
+     i = 0; // reset i so we can run through first part of memory
+
+    while (i < lastIdx && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) { // loop to find best slot
+
+    if(allMemory[i].head != 0 && i == 0) { //if the empty space is first in the memory
+      
+      if (process.size <= allMemory[i].head) {
+        temp.head = 0;
+        temp.tail = temp.head+process.size-1;
+        flag=1;
+      }
+
+    }
+
+    if (i == allMemoryInfo->listLength-1  && process.size <= allMemoryInfo->fullLength-allMemory[i].tail-1 && flag == 0) { //if empty space is last
+      temp.head = allMemory[i].tail+1;
+      temp.tail = temp.head+process.size-1;
+      flag=1;
+    }
+
+    if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
+      temp.head = allMemory[i].tail+1;
+      temp.tail = temp.head+process.size-1;
+      flag=1;
+    }
+
+    i++;
+
+  }
+
+  }
+    if (flag == 1) {
+      shiftRight(allMemory, i, allMemoryInfo);
+      allMemory[i] = temp;
+      allMemoryInfo->totalSize += process.size;
+      printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
+      lastIdx = i;
+      return;
+    }
+    else {
+      printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
+      return;
+    }
 
 };
 
@@ -265,6 +370,10 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
   // releases the memory held the the specified process
   
   int i = 0;
+
+  if (i < lastIdx) {
+    lastIdx--;
+  }
 
   while (i < memoryInfo->listLength) {
     if (strcmp(memory[i].pID, process.pID) == 0) {
