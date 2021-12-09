@@ -133,8 +133,8 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       break;
     }
 
-    //if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
-      else {
+    if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
+      //else {
       temp.head = allMemory[i].tail+1;
       temp.tail = temp.head+process.size-1;
       flag=1;
@@ -183,7 +183,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
   }
     if (flag == 1) {
-      shiftRight(allMemory, i, allMemoryInfo);
+      shiftRight(allMemory, i+1, allMemoryInfo);
       allMemory[i] = temp;
       allMemoryInfo->totalSize += process.size;
       printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
