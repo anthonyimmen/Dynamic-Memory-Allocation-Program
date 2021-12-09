@@ -103,14 +103,14 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
   int flag = 0;
   
   // list is empty and we insert at front 
-  if (length == 0 && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) {
+  if (length == 0 && process.size <= allMemoryInfo->fullLength) {
     allMemory[0].head = 0;
     allMemory[0].tail = process.size-1;
     allMemory[0].size = process.size;
     allMemoryInfo->listLength++;
     allMemoryInfo->totalSize += process.size;
     strcpy(allMemory[0].pID, process.pID);
-    printf("ALLOCATED %s %ld\n", process.pID, 0);
+    printf("ALLOCATED %s %d + \n", process.pID, 0);
     lastIdx = 0;
     return;
   }
@@ -186,12 +186,12 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       shiftRight(allMemory, i, allMemoryInfo);
       allMemory[i] = temp;
       allMemoryInfo->totalSize += process.size;
-      printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
+      printf("ALLOCATED %s %ld + \n", process.pID, allMemory[i].head);
       lastIdx = i;
       return;
     }
     else {
-      printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
+      printf("FAIL REQUEST %s %ld + \n", process.pID, process.size);
       return;
     }
 
