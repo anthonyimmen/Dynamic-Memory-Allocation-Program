@@ -204,7 +204,7 @@ void worstFIT(struct memory *allMemory, struct memory process, struct memoryInfo
   }
 
   struct memory temp;
-  long greatest = allMemoryInfo->fullLength;
+  long greatest = -1;
   temp.head = 0;
   temp.tail = allMemoryInfo->fullLength-1;
   strcpy(temp.pID, process.pID);
