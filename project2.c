@@ -166,7 +166,7 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
   }
     if (flag == 1) {
-      shiftRight(allMemory, j, allMemoryInfo);
+      shiftRight(allMemory, j+1, allMemoryInfo);
       j++;
       allMemory[j] = temp;
       allMemoryInfo->totalSize += process.size;
