@@ -60,7 +60,7 @@ void program(FILE *file, char *typeFit, long totalSize);
     while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) {
 
 
-      if (i == allMemoryInfo->listLength-1 && allMemoryInfo->fullLength - allMemory[i].tail >= process.size) { // we are inserting into last open space
+      if (i == allMemoryInfo->listLength-1 && allMemoryInfo->fullLength - allMemory[i].tail-1 >= process.size) { // we are inserting into last open space
         shiftRight(allMemory, i, allMemoryInfo);
         i++; //increment i so we insert into the new open slot
         allMemory[i].head = allMemory[i-1].tail+1;
@@ -73,7 +73,7 @@ void program(FILE *file, char *typeFit, long totalSize);
 
       }
 
-      if (allMemory[i+1].head - allMemory[i].tail >= process.size) {
+      if (allMemory[i+1].head - allMemory[i].tail-1 >= process.size) {
         // shift everything down so it will be in order then insert element into the new slot
         shiftRight(allMemory, i, allMemoryInfo);
         i++; //increment i so we insert into the new open slot
