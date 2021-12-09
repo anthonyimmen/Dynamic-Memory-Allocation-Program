@@ -20,7 +20,7 @@ struct memoryInfo {
 
 }allMemoryInfo;
 
-long lastIdxNEXT = 0;
+long lastIdxNEXT = -1;
 
 // declare all functions 
 void firstFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo);
@@ -133,12 +133,13 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
         break;
       }
 
-      if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
-        temp.head = allMemory[i].tail+1;
-        temp.tail = temp.head+process.size-1;
-        flag=1;
-        break;
-      }
+      //if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
+        else {
+          temp.head = allMemory[i].tail+1;
+          temp.tail = temp.head+process.size-1;
+          flag=1;
+          break;
+        }
 
       i++;
 
@@ -170,12 +171,13 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       break;
     }
 
-    if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
-      temp.head = allMemory[i].tail+1;
-      temp.tail = temp.head+process.size-1;
-      flag=1;
-      break;
-    }
+    //if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
+      else {
+        temp.head = allMemory[i].tail+1;
+        temp.tail = temp.head+process.size-1;
+        flag=1;
+        break;
+      }
 
     i++;
 
