@@ -20,7 +20,7 @@ struct memoryInfo {
 
 }allMemoryInfo;
 
-int lastIdx = -1;
+long lastIdx = -1;
 
 // declare all functions 
 void firstFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo);
