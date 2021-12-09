@@ -123,7 +123,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
   i = lastIdx;
 
-  while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) { // loop to find best slot
+  while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize && length > 0) { // loop to find best slot
 
 
     if (i == allMemoryInfo->listLength-1  && process.size <= allMemoryInfo->fullLength-allMemory[i].tail-1 && flag == 0) { //if empty space is last
