@@ -121,7 +121,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
   strcpy(temp.pID, process.pID);
   temp.size = process.size;
 
-  i = lastIdx;
+  if (allMemoryInfo->listLength > 0) {
 
   while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize && length > 0) { // loop to find best slot
 
@@ -143,7 +143,8 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
     i++;
 
   }
-
+  
+  }
 
   if (flag == 0 && allMemoryInfo->listLength > 0) {
 
