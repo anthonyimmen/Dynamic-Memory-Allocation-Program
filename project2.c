@@ -377,12 +377,12 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
         long sizeCPY = memory[i].size;
         memoryInfo->totalSize -= memory[i].size;
         shiftLeft(memory, i, memoryInfo);
-        printf("FREE %s %ld %ld\n", process.pID, sizeCPY, headCPY);
+        printf("FREE %s %ld %ld &\n", process.pID, sizeCPY, headCPY);
         return;
     }
     i++;
   }
-  printf("FAIL RELEASE %s\n", process.pID);
+  printf("FAIL RELEASE %s $\n", process.pID);
 
 }
 
