@@ -115,7 +115,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
     allMemoryInfo->listLength++;
     allMemoryInfo->totalSize += process.size;
     strcpy(allMemory[0].pID, process.pID);
-    printf("ALLOCATED %s %ld + \n", process.pID, 0);
+    printf("ALLOCATED %s %ld\n", process.pID, 0);
     lastIdx = 0;
     return;
   }
@@ -190,12 +190,12 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       shiftRight(allMemory, i, allMemoryInfo);
       allMemory[i] = temp;
       allMemoryInfo->totalSize += process.size;
-      printf("ALLOCATED %s %ld - \n", process.pID, allMemory[i].head);
+      printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
       lastIdx = i;
       return;
     }
     else {
-      printf("FAIL REQUEST %s %ld - \n", process.pID, process.size);
+      printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
       return;
     }
 
@@ -377,12 +377,12 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
         long sizeCPY = memory[i].size;
         memoryInfo->totalSize -= memory[i].size;
         shiftLeft(memory, i, memoryInfo);
-        printf("FREE %s %ld %ld &\n", process.pID, sizeCPY, headCPY);
+        printf("FREE %s %ld %ld\n", process.pID, sizeCPY, headCPY);
         return;
     }
     i++;
   }
-  printf("FAIL RELEASE %s $\n", process.pID);
+  printf("FAIL RELEASE %s\n", process.pID);
 
 }
 
@@ -474,7 +474,7 @@ void shiftLeft(struct memory *memory, int lastIdx, struct memoryInfo *memoryInfo
 void shiftRight(struct memory *memory, int startIdx, struct memoryInfo *memoryInfo) { // used in request
   
   int i = memoryInfo->listLength-1;
-  while(i >= startIdx) {
+  while(i > startIdx) {
     memory[i+1] = memory[i];
     i--;
   }
