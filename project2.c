@@ -183,7 +183,7 @@ if (flag == 0) {
 
   }
     if (flag == 1) {
-      shiftRight(allMemory, i, allMemoryInfo);
+      shiftRight(allMemory, i+1, allMemoryInfo);
       allMemory[i] = temp;
       allMemoryInfo->totalSize += process.size;
       printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
