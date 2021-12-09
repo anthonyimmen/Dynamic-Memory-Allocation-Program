@@ -102,24 +102,6 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
   int length = allMemoryInfo->listLength;
   int flag = 0;
 
-  if (process.size <= 0) { // if process size == 0 dont allocate
-    printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
-    return;
-  }
-  
-  // list is empty and we insert at front 
-  if (length == 0 && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) {
-    allMemory[0].head = 0;
-    allMemory[0].tail = process.size-1;
-    allMemory[0].size = process.size;
-    allMemoryInfo->listLength++;
-    allMemoryInfo->totalSize += process.size;
-    strcpy(allMemory[0].pID, process.pID);
-    printf("ALLOCATED %s %ld\n", process.pID, 0);
-    lastIdx = 0;
-    return;
-  }
-
   struct memory temp;
   temp.head = 0;
   temp.tail = allMemoryInfo->fullLength-1;
@@ -183,6 +165,19 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
     i++;
 
+  }
+
+  // list is empty and we insert at front 
+  if (length == 0 && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) {
+    allMemory[0].head = 0;
+    allMemory[0].tail = process.size-1;
+    allMemory[0].size = process.size;
+    allMemoryInfo->listLength++;
+    allMemoryInfo->totalSize += process.size;
+    strcpy(allMemory[0].pID, process.pID);
+    printf("ALLOCATED %s %ld\n", process.pID, 0);
+    lastIdx = 0;
+    return;
   }
 
   }
