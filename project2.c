@@ -469,12 +469,23 @@ void shiftLeft(struct memory *memory, int lastIdx, struct memoryInfo *memoryInfo
 
 void shiftRight(struct memory *memory, int startIdx, struct memoryInfo *memoryInfo) { // used in request
   
-  int i = memoryInfo->listLength-1;
-  while(i >= startIdx) {
-    memory[i+1] = memory[i];
-    i--;
+  if (startIdx == 0) {
+    int i = memoryInfo->listLength-1;
+    while(i >= startIdx) {
+      memory[i+1] = memory[i];
+      i--;
+    }
+   memoryInfo->listLength++;
   }
-  memoryInfo->listLength++;
+
+  else {
+    int i = memoryInfo->listLength-1;
+    while(i > startIdx) {
+      memory[i+1] = memory[i];
+      i--;
+    }
+   memoryInfo->listLength++;
+}
 
 };
 
