@@ -180,8 +180,84 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
 };
 
-void worstFIT(struct memory *memory, struct memory process, struct memoryInfo *memoryInfo) {
+void worstFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) {
+
+  int i = 0;
+  int length = allMemoryInfo->listLength;
+  int flag = 0;
+
+  if (process.size <= 0) { // if process size == 0 dont allocate
+    printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
+    return;
+  }
   
+  // list is empty and we insert at front 
+  if (length == 0 && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) {
+    allMemory[i].head = 0;
+    allMemory[i].tail = process.size-1;
+    allMemory[i].size = process.size;
+    allMemoryInfo->listLength++;
+    allMemoryInfo->totalSize += process.size;
+    strcpy(allMemory[i].pID, process.pID);
+    printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
+    return;
+  }
+
+  struct memory temp;
+  long greatest = allMemoryInfo->fullLength;
+  temp.head = 0;
+  temp.tail = allMemoryInfo->fullLength-1;
+  strcpy(temp.pID, process.pID);
+  temp.size = process.size;
+
+  int j = i;
+
+  while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) { // loop to find best slot
+
+    if(allMemory[i].head != 0 && i == 0) { //if the empty space is first in the memory
+      
+      if (allMemory[i].head > greatest) {
+        greatest = allMemory[i].head;
+        temp.head = 0;
+        temp.tail = temp.head+process.size-1;
+        j = i;
+        flag=1;
+      }
+
+    }
+
+    if (i == allMemoryInfo->listLength-1  && allMemoryInfo->fullLength-allMemory[i].tail-1 > greatest) { //if empty space is last
+      greatest = allMemoryInfo->fullLength-1 - allMemory[i].tail-1;
+      temp.head = allMemory[i].tail+1;
+      temp.tail = temp.head+process.size-1;
+      j = i;
+      flag=1;
+    }
+
+    if (allMemory[i+1].head - allMemory[i].tail-1 > greatest && allMemory[i+1].head - allMemory[i].tail-1 >= process.size) { //if empty is anything in between
+      greatest = allMemory[i+1].head - allMemory[i].tail-1;
+      temp.head = allMemory[i].tail+1;
+      temp.tail = temp.head+process.size-1;
+      j = i;
+      flag=1;
+    }
+
+    i++;
+
+  }
+    if (flag == 1) {
+      shiftRight(allMemory, j, allMemoryInfo);
+      j++;
+      allMemory[j] = temp;
+      allMemoryInfo->totalSize += process.size;
+      printf("ALLOCATED %s %ld\n", process.pID, allMemory[j].head);
+      return;
+    }
+    else {
+      printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
+      return;
+    }
+
 };
 
 void release(struct memory *memory, struct memory process, struct memoryInfo *memoryInfo) {
@@ -293,7 +369,7 @@ void shiftLeft(struct memory *memory, int lastIdx, struct memoryInfo *memoryInfo
 void shiftRight(struct memory *memory, int startIdx, struct memoryInfo *memoryInfo) { // used in request
   
   int i = memoryInfo->listLength-1;
-  while(i > startIdx-1) {
+  while(i >= startIdx) {
     memory[i+1] = memory[i];
     i--;
   }
