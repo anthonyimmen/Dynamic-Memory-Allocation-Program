@@ -96,7 +96,7 @@ void program(FILE *file, char *typeFit, long totalSize);
 
 };
 
-void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) {
+void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) { // this essentially works by having two while loops, the first one runs through where the lastIdxNEXT counter leaves off to up until the end of the memory. If our flag is never checked during the first loop meaning there was not any empty space, that means that we need to run through the beginning of the memory up until where our lastIdxNEXT counter was at.
  
   int i = lastIdxNEXT;
   int length = allMemoryInfo->listLength;
@@ -125,9 +125,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
     while (i < length && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize && length > 0) { // loop to find best slot
 
-
       if (i == allMemoryInfo->listLength-1  && process.size <= allMemoryInfo->fullLength-allMemory[i].tail-1 && flag == 0) { //if empty space is last
-
         temp.head = (allMemory[i].tail + 1);
         temp.tail = temp.head+process.size-1;
         flag=1;
@@ -183,8 +181,8 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
   }
 
   }
-    if (flag == 1) {
-      if (i == allMemoryInfo->listLength-1) {
+    if (flag == 1) { // we check if the flag has been activated, and if it has we found a slot, and if it hasn't we have failed
+      if (i == allMemoryInfo->listLength-1) { // this check is specifically here for if i is at the last peice of memory. We need to increment listLength so we have an additional slot to shift and place our temp into
         allMemoryInfo->listLength++;
         allMemory[i+1] = temp;
         lastIdxNEXT = i+1;
@@ -207,7 +205,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
 };
 
-void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) {
+void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) { // works by using a loop to scan through all of the empty spaces and picking the smallest one
  
   int i = 0;
   int length = allMemoryInfo->listLength;
@@ -272,7 +270,7 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
     i++;
 
   }
-    if (flag == 1) {
+    if (flag == 1) { // if the flag is checked, then we allocated, if it is not checkedm then we failed
       shiftRight(allMemory, j, allMemoryInfo);
       j++;
       allMemory[j] = temp;
@@ -287,7 +285,7 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
 };
 
-void worstFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) {
+void worstFIT(struct memory *allMemory, struct memory process, struct memoryInfo *allMemoryInfo) { // very similar to best fit, it is essentially the same except that we have greatest instead of smallest and the <'s are changed to >'s
 
   int i = 0;
   int length = allMemoryInfo->listLength;
@@ -378,7 +376,7 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
         long headCPY = memory[i].head;
         long sizeCPY = memory[i].size;
         memoryInfo->totalSize -= memory[i].size;
-        if (i < lastIdxNEXT) {
+        if (i < lastIdxNEXT) { // the lastIdxNEXT which is used as a counter in next fit needs to be decremented if i is less than it because if it is, the lastIdxNext would be shift down by 1
           lastIdxNEXT--;
         }
         shiftLeft(memory, i, memoryInfo);
@@ -478,7 +476,7 @@ void shiftLeft(struct memory *memory, int lastIdx, struct memoryInfo *memoryInfo
 
 void shiftRight(struct memory *memory, int startIdx, struct memoryInfo *memoryInfo) { // used in request
   
-  if (startIdx == 0) {
+  if (startIdx == 0) {  // if the index that we want to shift to is the starting index we need to adjust the while loop condition so it will shift right that index
     int i = memoryInfo->listLength-1;
     while(i >= startIdx) {
       memory[i+1] = memory[i];
