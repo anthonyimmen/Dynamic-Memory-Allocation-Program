@@ -190,12 +190,12 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       shiftRight(allMemory, i, allMemoryInfo);
       allMemory[i] = temp;
       allMemoryInfo->totalSize += process.size;
-      printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
+      printf("ALLOCATED %s %ld - \n", process.pID, allMemory[i].head);
       lastIdx = i;
       return;
     }
     else {
-      printf("FAIL REQUEST %s %ld\n", process.pID, process.size);
+      printf("FAIL REQUEST %s %ld - \n", process.pID, process.size);
       return;
     }
 
