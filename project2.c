@@ -146,8 +146,8 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
   }
 
 
-  if (flag == 0 && allMemoryInfo->listLength > 0) {
-
+  //if (flag == 0 && allMemoryInfo->listLength > 0) {
+if (flag == 0) {
      i = 0; // reset i so we can run through first part of memory
 
     while (i < lastIdx && process.size <= allMemoryInfo->fullLength - allMemoryInfo->totalSize) { // loop to find best slot
@@ -183,7 +183,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
 
   }
     if (flag == 1) {
-      shiftRight(allMemory, i+1, allMemoryInfo);
+      shiftRight(allMemory, i, allMemoryInfo);
       allMemory[i] = temp;
       allMemoryInfo->totalSize += process.size;
       printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
