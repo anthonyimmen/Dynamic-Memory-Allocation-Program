@@ -148,7 +148,7 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
     }
 
     if (i == allMemoryInfo->listLength-1  && allMemoryInfo->fullLength-allMemory[i].tail-1 < smallest) { //if empty space is last
-      smallest = allMemoryInfo->fullLength-1 - allMemory[i].tail;
+      smallest = allMemoryInfo->fullLength-1 - allMemory[i].tail-1;
       temp.head = allMemory[i].tail+1;
       temp.tail = temp.head+process.size-1;
       j = i;
@@ -157,7 +157,7 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
     }
 
     else if (allMemory[i+1].head - allMemory[i].tail < smallest && allMemory[i+1].head - allMemory[i].tail >= process.size) { //if empty is anything in between
-      smallest = allMemory[i+1].head - allMemory[i].tail;
+      smallest = allMemory[i+1].head - allMemory[i].tail-1;
       temp.head = allMemory[i].tail+1;
       temp.tail = temp.head+process.size-1;
       j = i;
