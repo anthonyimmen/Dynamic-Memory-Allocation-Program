@@ -456,7 +456,7 @@ void shiftLeft(struct memory *memory, int lastIdx, struct memoryInfo *memoryInfo
   int i = memoryInfo->listLength-1;
   struct memory temp = memory[i];
   struct memory temp2;
-  while (i >= lastIdx) {
+  while (i > lastIdx) {
     temp2 = memory[i-1];
     memory[i-1] = temp;
     temp = temp2;
