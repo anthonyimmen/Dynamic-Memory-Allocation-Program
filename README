@@ -6,17 +6,17 @@ Libraries used: <stdio.h> <stdlib.h> <string.h> <stdbool.h>
 
 Code Summary:
 
-This project's goal is to simulate four memory allocation algorithms. Based off of the input given, the program will allocate, release, list, and find the process ids specifed. The way I designed this project to work was using a structure array to hold the process ids name, head, tail, and size. I also had an additional structure that would hold certain information about our structure array that was necessary for looking at certain information. To determine the places where to insert and remove processes in our allocated memory, I would perform small calculations on the head's and tail's of each process which would give me access to the empty slots spaced between the processes. Using these techniques together, I was able to get FIRSTFIT working within my own personal testing, but not within Gradescope's testing. I believed I had covered all the possible cases for FIRSTFIT, but I must have overlooked a few. BESTFIT was almost fully working within my own testing, but I was not able to get it working completely in the end. NEXTFIT and WORSTFIT have not been created within the program and neither will perform as intended.
+This project's goal is to simulate four memory allocation algorithms. Based off of the input given, the program will allocate, release, list, and find the process ids specifed. The way I designed this project to work was using a structure array to hold the process ids name, head, tail, and size. I also had an additional structure that would hold certain information about our structure array that was necessary for looking at certain information. To determine the places where to insert and remove processes in our allocated memory, I would perform small calculations on the head's and tail's of each process which would give me access to the empty slots spaced between the processes. Using these techniques together, I was able to get FIRSTFIT working within my own personal testing, but not within Gradescope's testing. I believed I had covered all the possible cases for FIRSTFIT, but I must have overlooked a few. BESTFIT is fully working within my own testing, but I was able to get it working almost completely in the end. NEXTFIT and WORSTFIT have been created within the program and both will perform as intended.
 
 Brief Description of functions: 
 
 firstFIT() - This function is what places our memory within the first avaliable slot. I check if the process size is <= 0 then we do not insert it into our array. If the list is empty, we insert it into the first avaliable spot, being at index 0 of the array. We then iterated over the rest of the slots within the memory, then insert the memory into the first avaliable spot that will fit the process.
 
-bestFIT() - Was not able to get working. I had a similar implementation to firstFIT, but I had an intital while loop which iterated through the entire memory array to find the smallest empty slot which still fit the process.
+bestFIT() - Has similar implementation to firstFIT, but I had an intital while loop which iterated through the entire memory array to find the smallest empty slot which still fit the process.
 
-nextFIT() - Was not able to create.
+nextFIT() - Works by having two while loops, the first one runs through where the lastIdxNEXT counter leaves off to up until the end of the memory. If our flag is never checked during the first loop meaning there was not any empty space, that means that we need to run through the beginning of the memory up until where our lastIdxNEXT counter was at.
 
-worstFIT() - Was not able to create.
+worstFIT() - Very similar to best fit, it is essentially the same except that we have greatest instead of smallest and the <'s are changed to >'s
 
 release() - Uses a while loop to iterate over all of the process IDs in the memory until we find the one that we are looking for. Once we find it, we use shiftLeft in order to pop out the specifed process. If not found we print that we failed the release.
 
