@@ -368,11 +368,11 @@ void release(struct memory *memory, struct memory process, struct memoryInfo *me
         long headCPY = memory[i].head;
         long sizeCPY = memory[i].size;
         memoryInfo->totalSize -= memory[i].size;
-        shiftLeft(memory, i, memoryInfo);
-        printf("FREE %s %ld %ld\n", process.pID, sizeCPY, headCPY);
         if (i < lastIdx) {
           lastIdx--;
         }
+        shiftLeft(memory, i, memoryInfo);
+        printf("FREE %s %ld %ld\n", process.pID, sizeCPY, headCPY);
         return;
     }
     i++;
