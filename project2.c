@@ -187,7 +187,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       if (i == allMemoryInfo->listLength-1) {
         allMemoryInfo->listLength++;
         allMemory[i+1] = temp;
-        lastIdxNEXT = allMemoryInfo->listLength;
+        lastIdxNEXT = i+1;
         allMemoryInfo->totalSize += process.size;
         printf("ALLOCATED %s %ld\n", process.pID, allMemory[i+1].head);
       }
