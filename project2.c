@@ -133,7 +133,8 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       break;
     }
 
-    if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
+    //if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
+      else {
       temp.head = allMemory[i].tail+1;
       temp.tail = temp.head+process.size-1;
       flag=1;
