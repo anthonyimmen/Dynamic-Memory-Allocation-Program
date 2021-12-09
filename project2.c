@@ -135,12 +135,14 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       temp.head = allMemory[i].tail+1;
       temp.tail = temp.head+process.size-1;
       flag=1;
+      break;
     }
 
     if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
       temp.head = allMemory[i].tail+1;
       temp.tail = temp.head+process.size-1;
       flag=1;
+      break;
     }
 
     i++;
@@ -148,7 +150,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
   }
 
 
-  if (flag == 0) {
+  if (flag == 0 && allMemoryInfo->listLength > 0) {
 
      i = 0; // reset i so we can run through first part of memory
 
@@ -160,6 +162,7 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
         temp.head = 0;
         temp.tail = temp.head+process.size-1;
         flag=1;
+        break;
       }
 
     }
@@ -168,12 +171,14 @@ void nextFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       temp.head = allMemory[i].tail+1;
       temp.tail = temp.head+process.size-1;
       flag=1;
+      break;
     }
 
     if (process.size <= allMemory[i+1].head - allMemory[i].tail-1 && flag == 0) { //if empty is anything in between
       temp.head = allMemory[i].tail+1;
       temp.tail = temp.head+process.size-1;
       flag=1;
+      break;
     }
 
     i++;
