@@ -120,7 +120,6 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
     allMemoryInfo->totalSize += process.size;
     strcpy(allMemory[i].pID, process.pID);
     printf("ALLOCATED %s %ld\n", process.pID, allMemory[i].head);
-    flag=1;
     return;
   }
 
@@ -143,8 +142,8 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
         temp.tail = allMemory[i].head-1;
         j = i;
         flag=1;
-       break;
-    }
+        break;
+      }
 
     }
 
@@ -172,7 +171,6 @@ void bestFIT(struct memory *allMemory, struct memory process, struct memoryInfo 
       shiftRight(allMemory, j, allMemoryInfo);
       j++;
       allMemory[j] = temp;
-      allMemoryInfo->listLength++;
       allMemoryInfo->totalSize += process.size;
       printf("ALLOCATED %s %ld\n", process.pID, allMemory[j].head);
       return;
