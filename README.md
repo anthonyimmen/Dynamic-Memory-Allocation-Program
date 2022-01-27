@@ -8,7 +8,7 @@ Libraries used: <stdio.h> <stdlib.h> <string.h> <stdbool.h>
 
 This project's goal is to simulate four memory allocation algorithms. Based off of the input given, the program will allocate, release, list, and find the process ids specifed. The way I designed this project to work was using a structure array to hold the process ids name, head, tail, and size. I also had an additional structure that would hold certain information about our structure array that was necessary for looking at certain information. To determine the places where to insert and remove processes in our allocated memory, I would perform small calculations on the head's and tail's of each process which would give me access to the empty slots spaced between the processes. Using these techniques together, I was able to get FIRSTFIT working within my own personal testing, but not within Gradescope's testing. I believed I had covered all the possible cases for FIRSTFIT, but I must have overlooked a few. BESTFIT is fully working within my own testing, but I was able to get it working almost completely in the end. NEXTFIT and WORSTFIT have been created within the program and both will perform as intended.
 
-## Brief Description of functions: 
+## Brief Description of Functions: 
 
 firstFIT() - This function is what places our memory within the first avaliable slot. I check if the process size is <= 0 then we do not insert it into our array. If the list is empty, we insert it into the first avaliable spot, being at index 0 of the array. We then iterated over the rest of the slots within the memory, then insert the memory into the first avaliable spot that will fit the process.
 
